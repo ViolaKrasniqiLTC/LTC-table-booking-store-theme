@@ -24,7 +24,7 @@
           "type": "table",
           "settings": {
             "top": 21,
-            "left": 76,
+            "left": 74,
             "chair_side": "top"
           }
         },
@@ -40,7 +40,7 @@
           "type": "table",
           "settings": {
             "top": 34,
-            "left": 76,
+            "left": 74,
             "chair_side": "bottom"
           }
         },
@@ -96,13 +96,13 @@
         "table_8"
       ],
       "settings": {
-        "max_width": 1000,
+        "heading": "Choose your desk",
+        "description": "<p>Browse the office floor plan and select an available desk. Each table links to its booking page where you can reserve a day that works for you.</p>",
+        "max_width": 1200,
         "padding_top": 36,
         "padding_bottom": 36
       }
     }
   },
-  "order": [
-    "office_layout"
-  ]
+  "order": ["office_layout"]
 }

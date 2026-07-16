@@ -1,10 +1,8 @@
 {% comment %}
   Office Floor Plan section
-  - Renders a floor-plan style layout 
+  - Floor plan on the left, description on the right
   - Each "table" is a section block that links to a Shopify product
-  - Position/size of every table is controlled by sliders in the theme editor,
-    so you can nudge things without touching code.
-  - Styles live in assets/office-floor-plan.css (loaded below).
+  - Position/size of every table is controlled by sliders in the theme editor
 {% endcomment %}
 
 {{ 'office-layout.css' | asset_url | stylesheet_tag }}
@@ -17,51 +15,62 @@
     --floor-padding-bottom: {{ section.settings.padding_bottom }}px;
   "
 >
-  <div class="office-floor-plan">
+  <div class="office-floor-plan-layout">
+    <div class="office-floor-plan">
+      <!-- Decorative floor outline -->
+      <div class="office-floor-plan__outline-outer" aria-hidden="true"></div>
+      <div class="office-floor-plan__outline-inner" aria-hidden="true"></div>
 
-    <!-- Decorative floor outline -->
-    <div class="office-floor-plan__outline-outer" aria-hidden="true"></div>
-    <div class="office-floor-plan__outline-inner" aria-hidden="true"></div>
-
-    <!-- Stairs (brown) + adjacent office block (gray) -->
-    <div class="office-floor-plan__stairs-area" aria-hidden="true">
-      <div class="office-floor-plan__stairs">
-        {% for i in (1..7) %}<span></span>{% endfor %}
+      <!-- Stairs (brown) + adjacent office block (gray) -->
+      <div class="office-floor-plan__stairs-area" aria-hidden="true">
+        <div class="office-floor-plan__stairs">
+          {% for i in (1..7) %}<span></span>{% endfor %}
+        </div>
+        <div class="office-floor-plan__cabinet"></div>
       </div>
-      <div class="office-floor-plan__cabinet"></div>
-    </div>
-    <div class="office-floor-plan__plant" aria-hidden="true">✦</div>
-    <div class="office-floor-plan__restroom" aria-hidden="true">
-      <span></span><span></span>
+      <div class="office-floor-plan__plant" aria-hidden="true">✦</div>
+      <div class="office-floor-plan__restroom" aria-hidden="true">
+        <span></span><span></span>
+      </div>
+
+      <!-- Tables, one per block -->
+      {% for block in section.blocks %}
+        {% if block.type == 'table' %}
+          {% assign product = block.settings.product %}
+          <a
+            {% if product %}
+              href="{{ product.url }}"
+            {% else %}
+              href="#" aria-disabled="true" tabindex="-1"
+            {% endif %}
+            class="office-floor-plan__table {% if product == blank %}office-floor-plan__table--empty{% endif %}"
+            style="
+              --t-top: {{ block.settings.top }}%;
+              --t-left: {{ block.settings.left }}%;
+              --t-width: {{ block.settings.width }}%;
+              --t-height: {{ block.settings.height }}%;
+            "
+            {{ block.shopify_attributes }}
+          >
+            <span class="office-floor-plan__chair office-floor-plan__chair--{{ block.settings.chair_side }}" aria-hidden="true"></span>
+            <span class="office-floor-plan__table-label">
+              {{ block.settings.label | default: product.title | default: 'Table' }}
+            </span>
+          </a>
+        {% endif %}
+      {% endfor %}
     </div>
 
-    <!-- Tables, one per block -->
-    {% for block in section.blocks %}
-      {% if block.type == 'table' %}
-        {% assign product = block.settings.product %}
-        <a
-          {% if product %}
-            href="{{ product.url }}"
-          {% else %}
-            href="#" aria-disabled="true" tabindex="-1"
-          {% endif %}
-          class="office-floor-plan__table {% if product == blank %}office-floor-plan__table--empty{% endif %}"
-          style="
-            --t-top: {{ block.settings.top }}%;
-            --t-left: {{ block.settings.left }}%;
-            --t-width: {{ block.settings.width }}%;
-            --t-height: {{ block.settings.height }}%;
-          "
-          {{ block.shopify_attributes }}
-        >
-          <span class="office-floor-plan__chair office-floor-plan__chair--{{ block.settings.chair_side }}" aria-hidden="true"></span>
-          <span class="office-floor-plan__table-label">
-            {{ block.settings.label | default: product.title | default: 'Table' }}
-          </span>
-        </a>
+    <aside class="office-floor-plan__description">
+      {% if section.settings.heading != blank %}
+        <h2 class="office-floor-plan__description-heading">{{ section.settings.heading }}</h2>
       {% endif %}
-    {% endfor %}
-
+      {% if section.settings.description != blank %}
+        <div class="office-floor-plan__description-body rte">
+          {{ section.settings.description }}
+        </div>
+      {% endif %}
+    </aside>
   </div>
 </div>
 
@@ -72,13 +81,25 @@
   "class": "section-office-floor-plan",
   "settings": [
     {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Choose your desk"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Browse the office floor plan and select an available desk. Each table links to its booking page where you can reserve a day that works for you.</p>"
+    },
+    {
       "type": "range",
       "id": "max_width",
       "label": "Maximum width (px)",
       "min": 600,
       "max": 1400,
       "step": 20,
-      "default": 1000
+      "default": 1200
     },
     {
       "type": "range",

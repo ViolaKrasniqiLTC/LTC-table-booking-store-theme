@@ -11,10 +11,41 @@
   padding: var(--floor-padding-top) 20px var(--floor-padding-bottom);
 }
 
+.office-floor-plan-layout {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
 .office-floor-plan {
   position: relative;
-  width: 100%;
+  flex: 1 1 48%;
+  min-width: 0;
   aspect-ratio: 916 / 672;
+}
+
+.office-floor-plan__description {
+  flex: 1 1 45%;
+  max-width: 34rem;
+}
+
+.office-floor-plan__description-heading {
+  margin: 0 0 1rem;
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  line-height: 1.2;
+}
+
+.office-floor-plan__description-body {
+  font-size: 1.5rem;
+  line-height: 1.7;
+}
+
+.office-floor-plan__description-body p {
+  margin: 0 0 0.75rem;
+}
+
+.office-floor-plan__description-body p:last-child {
+  margin-bottom: 0;
 }
 
 div.office-floor-plan__outline-outer,
@@ -183,6 +214,22 @@ div.office-floor-plan__cabinet {
 }
 
 @media (max-width: 749px) {
+  .office-floor-plan-layout {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .office-floor-plan {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .office-floor-plan__description {
+    flex: 1 1 auto;
+    max-width: none;
+    width: 100%;
+  }
+
   .office-floor-plan__table-label {
     font-size: 9px;
     padding: 2px;
