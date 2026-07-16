@@ -2,6 +2,7 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
 
+
 <div class="booking-calendar">
 
   <h2>Select Booking Dates</h2>
@@ -14,6 +15,7 @@
       readonly
     >
 
+
     <div class="selected-wrapper">
 
       <h3>Selected Dates:</h3>
@@ -21,6 +23,7 @@
       <ul id="selected-dates"></ul>
 
     </div>
+
 
     <input
       type="hidden"
@@ -33,16 +36,40 @@
 </div>
 
 
+<div id="booking-popup" class="booking-popup">
+
+  <div class="popup-content">
+
+    <h3>Maximum dates selected</h3>
+
+    <p>You can only select up to 3 booking days.</p>
+
+    <button id="close-popup">
+      OK
+    </button>
+
+  </div>
+
+</div>
+
+
 <script>
 window.bookingData = {
     unavailableDates: [
         {% assign first = true %}
+
         {% for booking in shop.metaobjects.booking.values %}
+
             {% if booking.status.value == 'Booked' and booking.table.value.id == product.id %}
+
                 {% unless first %},{% endunless %}
+
                 "{{ booking.date.value }}"
+
                 {% assign first = false %}
+
             {% endif %}
+
         {% endfor %}
     ]
 };
@@ -50,4 +77,5 @@ window.bookingData = {
 
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
+
 <script src="{{ 'booking-calendar.js' | asset_url }}" defer></script>

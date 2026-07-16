@@ -5,6 +5,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const hiddenInput = document.querySelector("#booking-dates");
     const counter = document.querySelector("#date-counter");
 
+    const popup = document.querySelector("#booking-popup");
+    const closePopup = document.querySelector("#close-popup");
+
+
+    closePopup.addEventListener("click", () => {
+
+        popup.style.display = "none";
+
+    });
+
     if (!input) return;
 
     const unavailableDates = window.bookingData?.unavailableDates || [];
@@ -70,7 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 selectedDates.pop();
                 this.setDate(selectedDates);
 
-                alert("You can only select up to 3 dates.");
+                const popup = document.querySelector("#booking-popup");
+
+                popup.style.display = "flex";
 
                 return;
             }
@@ -99,6 +111,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 });
-
-console.log(window.bookingData);
-console.log(window.bookingData.unavailableDates);
