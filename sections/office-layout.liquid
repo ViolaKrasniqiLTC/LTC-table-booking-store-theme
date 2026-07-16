@@ -1,0 +1,136 @@
+{% comment %}
+  Office Floor Plan section
+  - Renders a floor-plan style layout 
+  - Each "table" is a section block that links to a Shopify product
+  - Position/size of every table is controlled by sliders in the theme editor,
+    so you can nudge things without touching code.
+  - Styles live in assets/office-floor-plan.css (loaded below).
+{% endcomment %}
+
+{{ 'office-layout.css' | asset_url | stylesheet_tag }}
+
+<div
+  class="office-floor-plan-wrapper"
+  style="
+    --floor-max-width: {{ section.settings.max_width }}px;
+    --floor-padding-top: {{ section.settings.padding_top }}px;
+    --floor-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="office-floor-plan">
+
+    <!-- Decorative floor outline -->
+    <div class="office-floor-plan__outline-outer" aria-hidden="true"></div>
+    <div class="office-floor-plan__outline-inner" aria-hidden="true"></div>
+
+    <!-- Stairs (brown) + adjacent office block (gray) -->
+    <div class="office-floor-plan__stairs-area" aria-hidden="true">
+      <div class="office-floor-plan__stairs">
+        {% for i in (1..7) %}<span></span>{% endfor %}
+      </div>
+      <div class="office-floor-plan__cabinet"></div>
+    </div>
+    <div class="office-floor-plan__plant" aria-hidden="true">✦</div>
+    <div class="office-floor-plan__restroom" aria-hidden="true">
+      <span></span><span></span>
+    </div>
+
+    <!-- Tables, one per block -->
+    {% for block in section.blocks %}
+      {% if block.type == 'table' %}
+        {% assign product = block.settings.product %}
+        <a
+          {% if product %}
+            href="{{ product.url }}"
+          {% else %}
+            href="#" aria-disabled="true" tabindex="-1"
+          {% endif %}
+          class="office-floor-plan__table {% if product == blank %}office-floor-plan__table--empty{% endif %}"
+          style="
+            --t-top: {{ block.settings.top }}%;
+            --t-left: {{ block.settings.left }}%;
+            --t-width: {{ block.settings.width }}%;
+            --t-height: {{ block.settings.height }}%;
+          "
+          {{ block.shopify_attributes }}
+        >
+          <span class="office-floor-plan__chair office-floor-plan__chair--{{ block.settings.chair_side }}" aria-hidden="true"></span>
+          <span class="office-floor-plan__table-label">
+            {{ block.settings.label | default: product.title | default: 'Table' }}
+          </span>
+        </a>
+      {% endif %}
+    {% endfor %}
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Office floor plan",
+  "tag": "section",
+  "class": "section-office-floor-plan",
+  "settings": [
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Maximum width (px)",
+      "min": 600,
+      "max": 1400,
+      "step": 20,
+      "default": 1000
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "table",
+      "name": "Table",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product" },
+        { "type": "text", "id": "label", "label": "Label override", "info": "Defaults to the product title" },
+        { "type": "select", "id": "chair_side", "label": "Chair position", "options": [
+            { "value": "top", "label": "Top" },
+            { "value": "bottom", "label": "Bottom" }
+          ], "default": "bottom" },
+        { "type": "range", "id": "top", "label": "Position from top (%)", "min": 0, "max": 100, "step": 1, "default": 20 },
+        { "type": "range", "id": "left", "label": "Position from left (%)", "min": 0, "max": 100, "step": 1, "default": 45 },
+        { "type": "range", "id": "width", "label": "Width (%)", "min": 5, "max": 40, "step": 1, "default": 20 },
+        { "type": "range", "id": "height", "label": "Height (%)", "min": 5, "max": 30, "step": 1, "default": 10 }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Office floor plan",
+      "blocks": [
+        { "type": "table", "settings": { "top": 21, "left": 45, "chair_side": "top" } },
+        { "type": "table", "settings": { "top": 21, "left": 76, "chair_side": "top" } },
+        { "type": "table", "settings": { "top": 35, "left": 45, "chair_side": "bottom" } },
+        { "type": "table", "settings": { "top": 34, "left": 76, "chair_side": "bottom" } },
+        { "type": "table", "settings": { "top": 64, "left": 36, "width": 18, "height": 10, "chair_side": "top" } },
+        { "type": "table", "settings": { "top": 64, "left": 56, "width": 18, "height": 10, "chair_side": "top" } },
+        { "type": "table", "settings": { "top": 76, "left": 36, "width": 18, "height": 10, "chair_side": "bottom" } },
+        { "type": "table", "settings": { "top": 76, "left": 56, "width": 18, "height": 10, "chair_side": "bottom" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

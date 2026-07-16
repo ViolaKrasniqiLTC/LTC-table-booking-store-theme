@@ -1,0 +1,193 @@
+/* Office floor plan section styles
+   Class names use a fixed "office-floor-plan__" namespace (BEM-ish) instead of
+   being scoped to section.id, since a plain .css asset file has no access to
+   Liquid objects like {{ section.id }}. If you need two independently-styled
+   instances on the same page, duplicate this file and give it a new namespace. */
+
+.office-floor-plan-wrapper {
+  width: 100%;
+  max-width: var(--floor-max-width);
+  margin: 0 auto;
+  padding: var(--floor-padding-top) 20px var(--floor-padding-bottom);
+}
+
+.office-floor-plan {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 916 / 672;
+}
+
+div.office-floor-plan__outline-outer,
+div.office-floor-plan__outline-inner,
+div.office-floor-plan__cabinet {
+  display: block;
+}
+
+.office-floor-plan__outline-outer {
+  position: absolute;
+  inset: 0;
+  background: #111111;
+  clip-path: polygon(
+    96.72% 7.29%,
+    19.65% 7.29%,
+    19.65% 47.62%,
+    7.64% 47.62%,
+    7.75% 97.77%,
+    77.62% 97.77%,
+    77.51% 56.1%,
+    96.83% 55.8%
+  );
+}
+
+.office-floor-plan__outline-inner {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  clip-path: polygon(
+    95.12% 8.89%,
+    21.25% 8.89%,
+    21.25% 49.22%,
+    9.24% 49.22%,
+    9.35% 96.17%,
+    76.02% 96.17%,
+    75.91% 54.52%,
+    95.23% 54.22%
+  );
+}
+
+.office-floor-plan__stairs-area {
+  position: absolute;
+  top: 9.2%;
+  left: 21.5%;
+  z-index: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 4%;
+  width: 22%;
+  height: 33%;
+}
+
+.office-floor-plan__stairs {
+  flex: 0 0 38%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: transparent;
+}
+
+.office-floor-plan__stairs span {
+  display: block;
+  height: 9%;
+  background: #b3714a;
+}
+
+.office-floor-plan__cabinet {
+  flex: 1 1 auto;
+  background: #9a9a9a;
+  min-width: 0;
+}
+
+.office-floor-plan__plant {
+  position: absolute;
+  top: 46.5%;
+  left: 66.5%;
+  width: 5%;
+  height: 6%;
+  background: #b3714a;
+  color: #3aa35a;
+  font-size: clamp(12px, 1.6vw, 22px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+}
+
+.office-floor-plan__restroom {
+  position: absolute;
+  top: 66.5%;
+  left: 8%;
+  width: 9%;
+  height: 16%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+.office-floor-plan__restroom span {
+  display: block;
+  width: 70%;
+  height: 22%;
+  background: #111111;
+  border-radius: 999px;
+}
+
+/* Tables */
+.office-floor-plan__table {
+  position: absolute;
+  top: var(--t-top);
+  left: var(--t-left);
+  width: var(--t-width);
+  height: var(--t-height);
+  background: #1a1a1a;
+  color: #ffffff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 3px;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+  box-sizing: border-box;
+}
+.office-floor-plan__table:hover {
+  background: #303030;
+  transform: scale(1.035);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  z-index: 5;
+}
+.office-floor-plan__table--empty {
+  background: repeating-linear-gradient(
+    45deg,
+    #2a2a2a,
+    #2a2a2a 6px,
+    #1a1a1a 6px,
+    #1a1a1a 12px
+  );
+  cursor: default;
+}
+.office-floor-plan__table-label {
+  font-size: clamp(9px, 1.1vw, 14px);
+  padding: 4px 6px;
+  line-height: 1.2;
+}
+
+.office-floor-plan__chair {
+  position: absolute;
+  width: 16%;
+  max-width: 22px;
+  aspect-ratio: 1;
+  background: #1a1a1a;
+  border-radius: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.office-floor-plan__chair--top {
+  top: -22%;
+}
+.office-floor-plan__chair--bottom {
+  bottom: -22%;
+}
+
+@media (max-width: 749px) {
+  .office-floor-plan__table-label {
+    font-size: 9px;
+    padding: 2px;
+  }
+  .office-floor-plan__chair {
+    display: none;
+  }
+}
