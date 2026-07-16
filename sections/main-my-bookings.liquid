@@ -1,0 +1,16 @@
+<div class="my-bookings">
+    <h1> My Bookings</h1>
+{% unless customer %}
+    <p>Please <a href="{{ routes.account_login_url }}">login</a> to view your bookings.</p>
+{% else %}
+    <p>Your bookings will appear here.</p>
+{% endunless %}
+</div>
+
+{% schema %}
+{
+    "name": "My Bookings",
+    "settings": [],
+    "presets":[{"name": "My Bookings"}]
+}
+{% endschema %}
