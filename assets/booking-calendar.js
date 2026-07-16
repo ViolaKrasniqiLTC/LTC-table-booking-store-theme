@@ -1,127 +1,104 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
 
     const input = document.querySelector("#booking-date");
     const selectedList = document.querySelector("#selected-dates");
     const hiddenInput = document.querySelector("#booking-dates");
+    const counter = document.querySelector("#date-counter");
 
     if (!input) return;
 
+    const unavailableDates = window.bookingData?.unavailableDates || [];
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0); 
+    today.setHours(0, 0, 0, 0);
 
     const nextMonday = new Date(today);
+    const currentDay = today.getDay();
 
-    const day = today.getDay();
+    const daysUntilNextMonday =
+        currentDay === 1 ? 7 : (8 - currentDay);
 
-    const daysUntilNextMonday = day === 1 ? 7 : (8 - day);
-
-    nextMonday.setDate(
-        today.getDate() + daysUntilNextMonday
-    );
-
+    nextMonday.setDate(today.getDate() + daysUntilNextMonday);
+    nextMonday.setHours(0, 0, 0, 0);
 
     const nextFriday = new Date(nextMonday);
-
-    nextFriday.setDate(
-        nextMonday.getDate() + 4
-    );
-
+    nextFriday.setDate(nextMonday.getDate() + 4);
     nextFriday.setHours(23, 59, 59, 999);
 
+    const pad = (n) => String(n).padStart(2, "0");
 
-    const pad = (n) => String(n).padStart(2, '0');
     const formatDate = (date) => {
-        const year = date.getFullYear();
-        const month = pad(date.getMonth() + 1);
-        const day = pad(date.getDate());
-        return `${year}-${month}-${day}`;
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
     };
-
 
     flatpickr(input, {
 
         inline: true,
-
         mode: "multiple",
-
 
         disable: [
 
             function(date) {
 
-                date.setHours(0, 0, 0, 0);
+                const formatted = formatDate(date);
 
-                // Disable before next Monday
+                if (unavailableDates.includes(formatted)) {
+                    return true;
+                }
+
                 if (date < nextMonday) {
                     return true;
                 }
 
-
-                // Disable after next Friday
                 if (date > nextFriday) {
                     return true;
                 }
 
-
-                // Disable Saturday and Sunday
-                if (
-                    date.getDay() === 0 ||
-                    date.getDay() === 6
-                ) {
+                if (date.getDay() === 0 || date.getDay() === 6) {
                     return true;
                 }
 
-
                 return false;
-
             }
 
         ],
 
-
         onChange: function(selectedDates) {
-
 
             if (selectedDates.length > 3) {
 
                 selectedDates.pop();
-
                 this.setDate(selectedDates);
 
-                alert(
-                    "You can only select up to 3 dates."
-                );
+                alert("You can only select up to 3 dates.");
 
+                return;
             }
 
-
-            const formattedDates =
-                selectedDates.map(date =>
-                    formatDate(date)
-                );
-
+            const formattedDates = selectedDates.map(formatDate);
 
             selectedList.innerHTML = "";
 
-
             formattedDates.forEach(date => {
 
-                const li =
-                    document.createElement("li");
-
+                const li = document.createElement("li");
                 li.textContent = date;
 
                 selectedList.appendChild(li);
 
             });
 
+            hiddenInput.value = formattedDates.join(",");
 
-            hiddenInput.value =
-                formattedDates.join(",");
+            if (counter) {
+                counter.textContent = `${formattedDates.length}/3`;
+            }
 
         }
 
     });
 
 });
+
+console.log(window.bookingData);
+console.log(window.bookingData.unavailableDates);

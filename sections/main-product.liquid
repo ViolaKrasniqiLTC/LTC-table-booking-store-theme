@@ -88,6 +88,9 @@
 
             {%- for block in section.blocks -%}
               {%- case block.type -%}
+                {% when 'booking_calendar' %}
+
+                  {% render 'booking-calendar' %}
                 {%- when '@app' -%}
                   {% render block %}
                 {%- when 'text' -%}
@@ -761,6 +764,10 @@
   "blocks": [
     {
       "type": "@app"
+    },
+    {
+      "type": "booking_calendar",
+      "name": "Booking Calendar"
     },
     {
       "type": "text",
@@ -2320,7 +2327,7 @@
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
       "default": 36
-    }
+    },
   ]
 }
 {% endschema %}

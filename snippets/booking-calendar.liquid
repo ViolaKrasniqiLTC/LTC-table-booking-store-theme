@@ -1,0 +1,53 @@
+{{ 'booking-calendar.css' | asset_url | stylesheet_tag }}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+
+<div class="booking-calendar">
+
+  <h2>Select Booking Dates</h2>
+
+  <div id="calendar-container">
+
+    <input
+      type="text"
+      id="booking-date"
+      readonly
+    >
+
+    <div class="selected-wrapper">
+
+      <h3>Selected Dates:</h3>
+
+      <ul id="selected-dates"></ul>
+
+    </div>
+
+    <input
+      type="hidden"
+      name="properties[Booking Dates]"
+      id="booking-dates"
+    >
+
+  </div>
+
+</div>
+
+
+<script>
+window.bookingData = {
+    unavailableDates: [
+        {% assign first = true %}
+        {% for booking in shop.metaobjects.booking.values %}
+            {% if booking.status.value == 'Booked' and booking.table.value.id == product.id %}
+                {% unless first %},{% endunless %}
+                "{{ booking.date.value }}"
+                {% assign first = false %}
+            {% endif %}
+        {% endfor %}
+    ]
+};
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
+<script src="{{ 'booking-calendar.js' | asset_url }}" defer></script>
