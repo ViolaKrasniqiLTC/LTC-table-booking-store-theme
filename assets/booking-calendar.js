@@ -30,8 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
     nextFriday.setHours(23, 59, 59, 999);
 
 
+    const pad = (n) => String(n).padStart(2, '0');
     const formatDate = (date) => {
-        return date.toISOString().split('T')[0];
+        const year = date.getFullYear();
+        const month = pad(date.getMonth() + 1);
+        const day = pad(date.getDate());
+        return `${year}-${month}-${day}`;
     };
 
 
