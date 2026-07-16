@@ -1,9 +1,3 @@
-/* Office floor plan section styles
-   Class names use a fixed "office-floor-plan__" namespace (BEM-ish) instead of
-   being scoped to section.id, since a plain .css asset file has no access to
-   Liquid objects like {{ section.id }}. If you need two independently-styled
-   instances on the same page, duplicate this file and give it a new namespace. */
-
 .office-floor-plan-wrapper {
   width: 100%;
   max-width: var(--floor-max-width);
@@ -50,7 +44,8 @@
 
 div.office-floor-plan__outline-outer,
 div.office-floor-plan__outline-inner,
-div.office-floor-plan__cabinet {
+div.office-floor-plan__cabinet,
+div.office-floor-plan__door {
   display: block;
 }
 
@@ -117,6 +112,8 @@ div.office-floor-plan__cabinet {
   flex: 1 1 auto;
   background: #9a9a9a;
   min-width: 0;
+  box-sizing: border-box;
+  border: 2px solid #111111;
 }
 
 .office-floor-plan__plant {
@@ -134,23 +131,49 @@ div.office-floor-plan__cabinet {
   border-radius: 3px;
 }
 
-.office-floor-plan__restroom {
+.office-floor-plan__door {
   position: absolute;
-  top: 66.5%;
-  left: 8%;
-  width: 9%;
-  height: 16%;
+  width: 0.7%;
+  min-width: 3px;
+  background: #b3714a;
+  z-index: 2;
+}
+
+.office-floor-plan__door--bathroom {
+  top: 43%;
+  left: 20.9%;
+  height: 5%;
+}
+
+.office-floor-plan__door--main {
+  top: 50.5%;
+  left: 9.1%;
+  height: 11%;
+}
+
+.office-floor-plan__kitchen {
+  position: absolute;
+  top: 67%;
+  left: 9%;
+  width: 14%;
+  height: 30%;
+  z-index: 2;
+  box-sizing: border-box;
+  border: 3px solid #111111;
+  border-left: none;
+  border-bottom: none;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
+  justify-content: center;
+  gap: 35%;
 }
-.office-floor-plan__restroom span {
+
+.office-floor-plan__kitchen span {
   display: block;
-  width: 70%;
-  height: 22%;
+  width: 30%;
+  height: 14%;
   background: #111111;
-  border-radius: 999px;
+  border-radius: 6px;
 }
 
 /* Tables */
@@ -207,10 +230,10 @@ div.office-floor-plan__cabinet {
   transform: translateX(-50%);
 }
 .office-floor-plan__chair--top {
-  top: -22%;
+  top: -42%;
 }
 .office-floor-plan__chair--bottom {
-  bottom: -22%;
+  bottom: -42%;
 }
 
 @media (max-width: 749px) {
