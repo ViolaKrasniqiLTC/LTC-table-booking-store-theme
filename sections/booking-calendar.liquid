@@ -1,0 +1,58 @@
+{{ 'booking-calendar.css' | asset_url | stylesheet_tag }}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css" />
+
+
+<div class="booking-calendar">
+
+    <h2>Select Booking Dates</h2>
+
+    <div id="calendar-container">
+
+        <input 
+            type="text"
+            id="booking-date"
+            placeholder="Select dates"
+            readonly
+        >
+
+
+        <div class="selected-wrapper">
+
+            <h3>
+                Selected Dates:
+            </h3>
+
+            <ul id="selected-dates">
+            </ul>
+
+        </div>
+
+
+        <input 
+            type="hidden"
+            name="properties[Booking Dates]"
+            id="booking-dates"
+        >
+
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr" defer="defer"></script>
+
+<script src="{{ 'booking-calendar.js' | asset_url }}" defer="defer"></script>
+
+
+{% schema %}
+{
+  "name": "Booking Calendar",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Booking Calendar"
+    }
+  ]
+}
+{% endschema %}
