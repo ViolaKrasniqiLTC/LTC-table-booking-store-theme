@@ -9,76 +9,267 @@
  */
 {
   "sections": {
-    "image_banner": {
-      "type": "image-banner",
+    "rich_text_GmNbDT": {
+      "type": "rich-text",
       "blocks": {
-        "heading": {
+        "heading_MqrR3j": {
           "type": "heading",
           "settings": {
-            "heading": "Browse our latest products",
-            "heading_size": "h0"
+            "heading": "LTC Office Layout",
+            "heading_size": "h1"
           }
         },
-        "button": {
-          "type": "buttons",
+        "text_BrAybX": {
+          "type": "text",
           "settings": {
-            "button_label_1": "Shop all",
-            "button_link_1": "shopify://collections/all",
-            "button_style_secondary_1": true,
-            "button_label_2": "",
-            "button_link_2": "",
-            "button_style_secondary_2": false
+            "text": "<p>Explore our modern office layout designed for productivity and collaboration. Our LTC Office features flexible workspaces, meeting rooms, and comfortable break areas to support your team's success.</p>"
           }
         }
       },
       "block_order": [
-        "heading",
-        "button"
+        "heading_MqrR3j",
+        "text_BrAybX"
       ],
+      "name": "t:sections.rich-text.presets.name",
       "settings": {
-        "image_overlay_opacity": 40,
-        "image_height": "large",
-        "desktop_content_position": "bottom-center",
-        "show_text_box": false,
-        "image_behavior": "none",
-        "desktop_content_alignment": "center",
-        "color_scheme": "scheme-3",
-        "mobile_content_alignment": "center",
-        "stack_images_on_mobile": false,
-        "show_text_below": false
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 44,
+        "padding_bottom": 0
       }
     },
-    "featured_collection": {
-      "type": "featured-collection",
+    "office_layout": {
+      "type": "office-layout",
+      "blocks": {
+        "table_1": {
+          "type": "table",
+          "settings": {
+            "product": "table-2",
+            "label": "",
+            "chair_side": "top",
+            "top": 21,
+            "left": 45,
+            "width": 20,
+            "height": 10
+          }
+        },
+        "table_2": {
+          "type": "table",
+          "settings": {
+            "product": "table-1",
+            "label": "",
+            "chair_side": "top",
+            "top": 21,
+            "left": 74,
+            "width": 20,
+            "height": 10
+          }
+        },
+        "table_3": {
+          "type": "table",
+          "settings": {
+            "product": "table-4",
+            "label": "",
+            "chair_side": "bottom",
+            "top": 35,
+            "left": 45,
+            "width": 20,
+            "height": 10
+          }
+        },
+        "table_4": {
+          "type": "table",
+          "settings": {
+            "product": "table-3",
+            "label": "",
+            "chair_side": "bottom",
+            "top": 34,
+            "left": 74,
+            "width": 20,
+            "height": 10
+          }
+        },
+        "table_5": {
+          "type": "table",
+          "settings": {
+            "product": "table-6",
+            "label": "",
+            "chair_side": "top",
+            "top": 64,
+            "left": 36,
+            "width": 18,
+            "height": 10
+          }
+        },
+        "table_6": {
+          "type": "table",
+          "settings": {
+            "product": "table-5",
+            "label": "",
+            "chair_side": "top",
+            "top": 64,
+            "left": 56,
+            "width": 18,
+            "height": 10
+          }
+        },
+        "table_7": {
+          "type": "table",
+          "settings": {
+            "product": "table-7",
+            "label": "",
+            "chair_side": "bottom",
+            "top": 76,
+            "left": 36,
+            "width": 18,
+            "height": 10
+          }
+        },
+        "table_8": {
+          "type": "table",
+          "settings": {
+            "product": "table-8",
+            "label": "",
+            "chair_side": "bottom",
+            "top": 76,
+            "left": 56,
+            "width": 18,
+            "height": 10
+          }
+        }
+      },
+      "block_order": [
+        "table_1",
+        "table_2",
+        "table_3",
+        "table_4",
+        "table_5",
+        "table_6",
+        "table_7",
+        "table_8"
+      ],
+      "name": "t:sections.office-layout.presets.name",
       "settings": {
-        "title": "Featured products",
-        "heading_size": "h2",
-        "description": "",
-        "show_description": false,
-        "description_style": "body",
-        "collection": "all",
-        "products_to_show": 8,
-        "columns_desktop": 4,
-        "color_scheme": "scheme-1",
-        "full_width": false,
-        "show_view_all": true,
-        "view_all_style": "solid",
-        "enable_desktop_slider": false,
-        "swipe_on_mobile": false,
-        "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": true,
-        "show_vendor": false,
-        "show_rating": false,
-        "quick_add": "none",
-        "columns_mobile": "2",
-        "padding_top": 44,
+        "heading": "Choose your table",
+        "description": "<p>Browse the office floor plan and select an available table. Each table links to its booking page where you can reserve a day that works for you.</p>",
+        "max_width": 1200,
+        "padding_top": 36,
         "padding_bottom": 36
+      }
+    },
+    "rich_text_Dbhbhm": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_9jfezD": {
+          "type": "heading",
+          "settings": {
+            "heading": "Next Week's Availability",
+            "heading_size": "h1"
+          }
+        },
+        "text_P97jYj": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Discover our available time slots for the coming week. Browse our calendar to find the perfect moment that works for your schedule and secure your booking today.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "heading_9jfezD",
+        "text_P97jYj"
+      ],
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 44,
+        "padding_bottom": 0
+      }
+    },
+    "table_availability": {
+      "type": "table-availability",
+      "blocks": {
+        "table_1": {
+          "type": "table",
+          "settings": {
+            "product": "table-1",
+            "label": ""
+          }
+        },
+        "table_2": {
+          "type": "table",
+          "settings": {
+            "product": "table-2",
+            "label": ""
+          }
+        },
+        "table_3": {
+          "type": "table",
+          "settings": {
+            "product": "table-3",
+            "label": ""
+          }
+        },
+        "table_4": {
+          "type": "table",
+          "settings": {
+            "product": "table-4",
+            "label": ""
+          }
+        },
+        "table_5": {
+          "type": "table",
+          "settings": {
+            "product": "table-5",
+            "label": ""
+          }
+        },
+        "table_6": {
+          "type": "table",
+          "settings": {
+            "product": "table-6",
+            "label": ""
+          }
+        },
+        "table_7": {
+          "type": "table",
+          "settings": {
+            "product": "table-7",
+            "label": ""
+          }
+        },
+        "table_8": {
+          "type": "table",
+          "settings": {
+            "product": "table-8",
+            "label": ""
+          }
+        }
+      },
+      "block_order": [
+        "table_1",
+        "table_2",
+        "table_3",
+        "table_4",
+        "table_5",
+        "table_6",
+        "table_7",
+        "table_8"
+      ],
+      "name": "t:sections.table-availability.presets.name",
+      "settings": {
+        "max_width": 1200
       }
     }
   },
   "order": [
-    "image_banner",
-    "featured_collection"
+    "rich_text_GmNbDT",
+    "office_layout",
+    "rich_text_Dbhbhm",
+    "table_availability"
   ]
 }
