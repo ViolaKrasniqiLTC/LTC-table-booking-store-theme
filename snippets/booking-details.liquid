@@ -1,12 +1,13 @@
 {% comment %}
   Usage:
-  {% render 'booking-details', booking: booking, order: order, customer: customer %}
+  {% render 'booking-details', booking: booking, order: order, customer: customer, detail_id: detail_id %}
 {% endcomment %}
 
 {% assign booking_customer = booking.customer.value %}
 {% assign booking_order = booking.order_reference.value | default: booking.order.value %}
 {% assign table_product = booking.table.value %}
 {% assign table_image = table_product.featured_media | default: table_product.featured_image %}
+{% assign booking_id = booking.booking_id.value | default: order.name %}
 
 <div class="booking-details__layout">
   {% if table_image %}
@@ -74,5 +75,11 @@
         </div>
       </dl>
     </section>
+
+    {% if show_cancel %}
+      <div class="booking-cancel">
+        {% render 'booking-cancel-trigger', booking: booking, order: order, customer: customer, modifier: 'inline' %}
+      </div>
+    {% endif %}
   </div>
 </div>
