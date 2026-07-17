@@ -1,0 +1,41 @@
+{% comment %}
+  Usage:
+  {% render 'booking-cancel-trigger',
+    booking: booking,
+    order: order,
+    customer: customer,
+    modifier: 'header'
+  %}
+{% endcomment %}
+
+{% assign trigger_booking_id = booking.booking_id.value | default: order.name %}
+{% assign trigger_order_ref = booking.order_reference.value | default: booking.order.value %}
+{% assign trigger_customer = booking.customer.value %}
+
+{% if trigger_customer.first_name != blank %}
+  {% assign trigger_customer_name = trigger_customer.first_name | append: ' ' | append: trigger_customer.last_name %}
+{% else %}
+  {% assign trigger_customer_name = customer.name %}
+{% endif %}
+
+{% assign trigger_customer_email = booking.customer_email.value | default: trigger_customer.email | default: customer.email %}
+
+{% if trigger_order_ref.name != blank %}
+  {% assign trigger_order_name = trigger_order_ref.name %}
+{% else %}
+  {% assign trigger_order_name = order.name %}
+{% endif %}
+
+<button
+  type="button"
+  class="booking-cancel__open{% if modifier != blank %} booking-cancel__open--{{ modifier }}{% endif %}"
+  data-cancel-trigger
+  data-booking-id="{{ trigger_booking_id | escape }}"
+  data-order-name="{{ trigger_order_name | escape }}"
+  data-table="{{ booking.table.value.title | default: '—' | escape }}"
+  data-date="{{ booking.date.value | default: '—' | escape }}"
+  data-customer-name="{{ trigger_customer_name | escape }}"
+  data-customer-email="{{ trigger_customer_email | escape }}"
+>
+  Request cancellation
+</button>
