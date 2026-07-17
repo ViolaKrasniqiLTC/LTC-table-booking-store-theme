@@ -1,161 +1,224 @@
+{{ 'my-bookings.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'my-bookings.js' | asset_url }}" defer="defer"></script>
+
 <div class="my-bookings">
-    <h1> My Bookings</h1>
-{% unless customer %}
-    <p>Please <a href="{{ routes.account_login_url }}?return_url={{ request.path }}">login</a> to view your bookings.</p>
-{% else %}
+  <header class="my-bookings__header">
+    <h1 class="my-bookings__title">My Bookings</h1>
+
+    {% unless customer %}
+      <div class="my-bookings__empty">
+        <p>
+          Please <a href="{{ routes.account_login_url }}?return_url={{ request.path }}">login</a> to view your bookings.
+        </p>
+      </div>
+    {% else %}
+      <p class="my-bookings__subtitle">Your upcoming and past table reservations.</p>
+    {% endunless %}
+  </header>
+
+  {% if customer %}
     {% paginate customer.orders by 20 %}
       {% assign has_bookings = false %}
-  
-      <div class="my-bookings__list">
+      {% assign upcoming_count = 0 %}
+      {% assign past_count = 0 %}
+      {% assign cancelled_count = 0 %}
+
+      {% for order in customer.orders %}
+        {% assign booking = order.metafields.custom.booking.value %}
+        {% if booking %}
+          {% assign has_bookings = true %}
+          {% assign status = booking.status.value | default: 'Booked' | downcase %}
+          {% if status == 'cancelled' %}
+            {% assign cancelled_count = cancelled_count | plus: 1 %}
+          {% elsif status == 'completed' %}
+            {% assign past_count = past_count | plus: 1 %}
+          {% else %}
+            {% assign upcoming_count = upcoming_count | plus: 1 %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+      {% if has_bookings %}
+        <div class="my-bookings__toolbar">
+          <div class="my-bookings__tabs" role="tablist" aria-label="Booking filters">
+            <button
+              type="button"
+              class="my-bookings__tab my-bookings__tab--active"
+              role="tab"
+              aria-selected="true"
+              data-filter="upcoming"
+            >
+              Upcoming ({{ upcoming_count }})
+            </button>
+            <button
+              type="button"
+              class="my-bookings__tab"
+              role="tab"
+              aria-selected="false"
+              data-filter="past"
+            >
+              Past ({{ past_count }})
+            </button>
+            <button
+              type="button"
+              class="my-bookings__tab"
+              role="tab"
+              aria-selected="false"
+              data-filter="cancelled"
+            >
+              Cancelled ({{ cancelled_count }})
+            </button>
+          </div>
+
+          <div class="my-bookings__sort">
+            <label class="visually-hidden" for="my-bookings-sort">Sort bookings</label>
+            <select id="my-bookings-sort" class="my-bookings__sort-select">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+            </select>
+          </div>
+        </div>
+      {% endif %}
+
+      <div id="my-bookings-list" class="my-bookings__list">
         {% for order in customer.orders %}
           {% assign booking = order.metafields.custom.booking.value %}
 
           {% if booking %}
-            {% assign has_bookings = true %}
             {% assign status = booking.status.value | default: 'Booked' %}
             {% assign status_class = status | downcase %}
+            {% assign detail_id = order.name | handleize %}
+            {% assign table_product = booking.table.value %}
+            {% assign table_image = table_product.featured_media | default: table_product.featured_image %}
+            {% assign booking_id = booking.booking_id.value | default: order.name %}
+            {% assign booking_customer = booking.customer.value %}
+            {% assign category = 'upcoming' %}
+            {% if status_class == 'cancelled' %}
+              {% assign category = 'cancelled' %}
+            {% elsif status_class == 'completed' %}
+              {% assign category = 'past' %}
+            {% endif %}
 
-            <article class="my-bookings__card">
-              <div class="my-bookings__card-header">
-                <p><strong>{{ booking.booking_id.value | default: 'Booking' }}</strong></p>
-                <span class="my-bookings__status my-bookings__status--{{ status_class }}">
-                  {{ status }}
-                </span>
+            <article
+              class="my-bookings__card{% unless category == 'upcoming' %} my-bookings__card--hidden{% endunless %}"
+              data-category="{{ category }}"
+              data-order-date="{{ order.created_at | date: '%s' }}"
+            >
+              <div class="my-bookings__card-media">
+                {% if table_image %}
+                  {{
+                    table_image
+                    | image_url: width: 700
+                    | image_tag:
+                      loading: 'lazy',
+                      class: 'my-bookings__card-image',
+                      alt: table_product.title
+                  }}
+                {% else %}
+                  <div class="my-bookings__card-image-placeholder">
+                    {{ 'product-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
+                  </div>
+                {% endif %}
               </div>
 
-              <dl class="my-bookings__details">
-                <div class="my-bookings__detail">
-                  <dt>Booking ID</dt>
-                  <dd>{{ booking.booking_id.value | default: '—' }}</dd>
+              <div class="my-bookings__card-content">
+                <div class="my-bookings__card-top">
+                  <p class="my-bookings__card-id">
+                    {%- if booking_id contains 'Booking' or booking_id contains 'BK' -%}
+                      {{ booking_id }}
+                    {%- else -%}
+                      Booking #{{ booking_id }}
+                    {%- endif -%}
+                  </p>
+                  <span class="my-bookings__status my-bookings__status--{{ status_class }}">
+                    {{ status }}
+                  </span>
                 </div>
 
-                <div class="my-bookings__detail">
-                  <dt>Customer</dt>
-                  <dd>{{ booking.customer.value | default: customer.name }}</dd>
-                </div>
+                <dl class="my-bookings__card-body">
+                  <div class="my-bookings__meta">
+                    <dt>Table</dt>
+                    <dd>{{ booking.table.value.title | default: '—' }}</dd>
+                  </div>
+                  <div class="my-bookings__meta">
+                    <dt>Date</dt>
+                    <dd>{{ booking.date.value | default: '—' }}</dd>
+                  </div>
+                  <div class="my-bookings__meta">
+                    <dt>Customer</dt>
+                    <dd>
+                      {% if booking_customer.first_name != blank %}
+                        {{ booking_customer.first_name }} {{ booking_customer.last_name }}
+                      {% else %}
+                        {{ customer.name }}
+                      {% endif %}
+                    </dd>
+                  </div>
+                  <div class="my-bookings__meta">
+                    <dt>Total</dt>
+                    <dd>{{ order.total_net_amount | money_with_currency }}</dd>
+                  </div>
+                </dl>
 
-                <div class="my-bookings__detail">
-                  <dt>Customer email</dt>
-                  <dd>{{ booking.customer_email.value | default: customer.email }}</dd>
+                <div class="my-bookings__card-action">
+                  <a href="#booking-{{ detail_id }}" class="my-bookings__button">
+                    View details
+                  </a>
                 </div>
-
-                <div class="my-bookings__detail">
-                  <dt>Order reference</dt>
-                  <dd>{{ booking.order_reference.value | default: order.name }}</dd>
-                </div>
-
-                <div class="my-bookings__detail">
-                  <dt>Order ID</dt>
-                  <dd>{{ booking.order_id.value | default: order.name }}</dd>
-                </div>
-
-                <div class="my-bookings__detail">
-                  <dt>Table</dt>
-                  <dd>{{ booking.table.value.title | default: '—' }}</dd>
-                </div>
-
-                <div class="my-bookings__detail">
-                  <dt>Date</dt>
-                  <dd>{{ booking.date.value | default: '—' }}</dd>
-                </div>
-
-                <div class="my-bookings__detail">
-                  <dt>Total</dt>
-                  <dd>{{ order.total_net_amount | money_with_currency }}</dd>
-                </div>
-              </dl>
-
-              <a href="{{ order.customer_url }}" class="button button--secondary">
-                View details
-              </a>
+              </div>
             </article>
           {% endif %}
         {% endfor %}
       </div>
-  
+
+      <p class="my-bookings__empty-tab" hidden>No bookings in this category.</p>
+
       {% unless has_bookings %}
-        <p>You do not have any bookings yet.</p>
+        <div class="my-bookings__empty">
+          <p>You do not have any bookings yet.</p>
+        </div>
       {% endunless %}
 
+      {% for order in customer.orders %}
+        {% assign booking = order.metafields.custom.booking.value %}
+
+        {% if booking %}
+          {% assign detail_id = order.name | handleize %}
+          {% assign booking_id = booking.booking_id.value | default: order.name %}
+
+          <div id="booking-{{ detail_id }}" class="booking-details">
+            <a href="#my-bookings-list" class="booking-details__back">← Back to all bookings</a>
+            <div class="booking-details__header">
+              <h2 class="booking-details__title">
+                {%- if booking_id contains 'Booking' or booking_id contains 'BK' -%}
+                  {{ booking_id }}
+                {%- else -%}
+                  Booking #{{ booking_id }}
+                {%- endif -%}
+              </h2>
+              {% assign detail_status = booking.status.value | default: 'Booked' %}
+              {% assign detail_status_class = detail_status | downcase %}
+              <span class="my-bookings__status my-bookings__status--{{ detail_status_class }}">
+                {{ detail_status }}
+              </span>
+            </div>
+            {% render 'booking-details', booking: booking, order: order, customer: customer %}
+          </div>
+        {% endif %}
+      {% endfor %}
+
     {% endpaginate %}
-  {% endunless %}
+  {% endif %}
 </div>
-<style>
-    .my-bookings__list {
-      display: grid;
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-    @media (min-width: 750px) {
-      .my-bookings__list {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    .my-bookings__card {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 1.5rem;
-    }
-    .my-bookings__card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      gap: 1rem;
-    }
-    .my-bookings__details {
-      display: grid;
-      gap: 0.8rem;
-      margin: 0 0 1.5rem;
-    }
-    .my-bookings__detail {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      padding-bottom: 0.8rem;
-      border-bottom: 1px solid #eee;
-    }
-    .my-bookings__detail:last-child {
-      border-bottom: 0;
-      padding-bottom: 0;
-    }
-    .my-bookings__detail dt {
-      margin: 0;
-      font-size: 1.2rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: #666;
-    }
-    .my-bookings__detail dd {
-      margin: 0;
-      font-size: 1.4rem;
-      text-align: right;
-      word-break: break-word;
-    }
-    .my-bookings__status {
-      padding: 0.3rem 0.8rem;
-      border-radius: 999px;
-      font-size: 1.2rem;
-      text-transform: uppercase;
-    }
-    .my-bookings__status--booked {
-      background: #e8f5e9;
-      color: #2e7d32;
-    }
-    .my-bookings__status--cancelled {
-      background: #ffebee;
-      color: #c62828;
-    }
-    .my-bookings__status--completed {
-      background: #f5f5f5;
-      color: #616161;
-    }
-  </style>
 
 {% schema %}
 {
-    "name": "My Bookings",
-    "settings": [],
-    "presets":[{"name": "My Bookings"}]
+  "name": "My Bookings",
+  "settings": [],
+  "presets": [
+    {
+      "name": "My Bookings"
+    }
+  ]
 }
 {% endschema %}
