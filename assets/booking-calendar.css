@@ -5,14 +5,16 @@
     border: 1px solid #e5e5e5;
     border-radius: 16px;
     background: #fff;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
+
 
 .booking-calendar h2 {
     font-size: 24px;
     margin-bottom: 20px;
     font-weight: 600;
 }
+
 
 #booking-date {
     display: none;
@@ -25,19 +27,23 @@
     box-shadow: none;
 }
 
+
 .flatpickr-months {
     padding: 10px 0;
 }
+
 
 .flatpickr-current-month {
     font-size: 18px;
     font-weight: 600;
 }
 
+
 .flatpickr-weekday {
     color: #666;
     font-weight: 600;
 }
+
 
 .flatpickr-day {
     height: 42px;
@@ -48,25 +54,22 @@
     transition: 0.2s ease;
 }
 
+
 .flatpickr-day:hover {
     background: #f2f2f2;
 }
+
 
 .flatpickr-day.selected {
     background: #111;
     border-color: #111;
     color: #fff;
-    font-weight: 600;
 }
 
-.flatpickr-day.selected:hover {
-    background: #333;
-}
 
 .flatpickr-day.flatpickr-disabled {
-    color: #9e9d9d80 !important;
+    color: #999 !important;
     background: transparent;
-    border-color: transparent;
     opacity: 1;
     cursor: not-allowed;
 }
@@ -78,10 +81,12 @@
     border-top: 1px solid #eee;
 }
 
+
 .selected-wrapper h3 {
     font-size: 15px;
     margin-bottom: 10px;
 }
+
 
 #selected-dates {
     display: flex;
@@ -89,12 +94,12 @@
     gap: 8px;
     list-style: none;
     padding: 0;
-    margin: 0;
 }
+
 
 #selected-dates li {
     background: #42a5f5;
-    color: #fff;
+    color: white;
     padding: 8px 14px;
     border-radius: 10px;
     font-size: 12px;
@@ -105,7 +110,7 @@
     display: none;
     position: absolute;
     inset: 0;
-    background: rgba(255, 255, 255, 0.75);
+    background: rgba(255,255,255,0.75);
     backdrop-filter: blur(2px);
     z-index: 9999;
     justify-content: center;
@@ -113,60 +118,51 @@
     border-radius: 16px;
 }
 
+
 .popup-content {
     width: 280px;
     padding: 25px;
-    background: #fff;
+    background: white;
     border-radius: 15px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    animation: popupAnimation 0.2s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
+
 
 .popup-content h3 {
     margin-bottom: 10px;
     font-size: 20px;
 }
 
+
 .popup-content p {
-    margin-bottom: 20px;
     color: #666;
+    margin-bottom: 20px;
     font-size: 14px;
 }
+
 
 .popup-content button {
     padding: 10px 25px;
     background: #111;
-    color: #fff;
+    color: white;
     border: none;
     border-radius: 25px;
     cursor: pointer;
-    transition: 0.2s ease;
 }
+
 
 .popup-content button:hover {
     background: #333;
 }
 
 
-@keyframes popupAnimation {
-    from {
-        transform: scale(0.9);
-        opacity: 0;
-    }
-
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-
-@media (max-width: 600px) {
+@media(max-width:600px) {
 
     .booking-calendar {
         padding: 20px;
     }
+
 
     .flatpickr-day {
         height: 38px;

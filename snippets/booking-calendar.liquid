@@ -2,11 +2,9 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
 
-
 <div class="booking-calendar">
 
   <h2>Select Booking Dates</h2>
-
 
   <div id="calendar-container">
 
@@ -16,7 +14,6 @@
       readonly
     >
 
-
     <div class="selected-wrapper">
 
       <h3>Selected Dates:</h3>
@@ -25,6 +22,12 @@
 
     </div>
 
+    <input
+      type="hidden"
+      name="properties[Table]"
+      id="booking-table"
+      value="{{ product.title }}"
+    >
 
     <input
       type="hidden"
@@ -32,20 +35,16 @@
       id="booking-dates"
     >
 
-
     <input
       type="hidden"
-      name="properties[Table]"
-      value="{{ product.title }}"
+      name="properties[Booking Details]"
+      id="booking-details"
     >
 
   </div>
 
 </div>
 
-
-
-<!-- Validation Popup -->
 
 <div id="booking-popup" class="booking-popup">
 
@@ -64,30 +63,21 @@
 </div>
 
 
-
 <script>
 window.bookingData = {
+    tableName: "{{ product.title | escape }}",
     unavailableDates: [
         {% assign first = true %}
-
         {% for booking in shop.metaobjects.booking.values %}
-
-            {% if booking.status.value == 'Booked' 
-              and booking.table.value.id == product.id %}
-
+            {% if booking.status.value == "Booked" and booking.table.value.id == product.id %}
                 {% unless first %},{% endunless %}
-
                 "{{ booking.date.value }}"
-
                 {% assign first = false %}
-
             {% endif %}
-
         {% endfor %}
     ]
 };
 </script>
-
 
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
