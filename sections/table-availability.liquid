@@ -1,0 +1,100 @@
+{% comment %}
+  Table Availability Grid
+  - Reads Booking metaobject entries directly
+  - Shows NEXT week (Mon-Fri) only, since bookings are only ever made for
+    the upcoming week in your system.
+  - A day is "Taken" if a Booking exists for that table+date with
+    status Booked or Completed. Cancelled bookings free the day up again.
+{% endcomment %}
+
+{{ 'table-availability.css' | asset_url | stylesheet_tag }}
+
+{% assign offset_seconds = 'now' | date: '%u' | minus: 1 | times: 86400 %}
+{% assign monday_ts = 'now' | date: '%s' | minus: offset_seconds | plus: 604800 %}
+
+<div class="table-availability" style="--avail-max-width: {{ section.settings.max_width }}px;">
+  <div class="table-availability__scroll">
+    <table class="table-availability__grid">
+      <thead>
+        <tr>
+          <th class="table-availability__corner"></th>
+          {% for i in (0..4) %}
+            {% assign day_ts = i | times: 86400 | plus: monday_ts %}
+            <th>
+              <span class="table-availability__day-name">{{ day_ts | date: '%A' }}</span>
+              <span class="table-availability__day-date">{{ day_ts | date: '%d %b' }}</span>
+            </th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% paginate shop.metaobjects.booking.values by 250 %}
+          {% capture taken_keys %}
+            {% for booking in shop.metaobjects.booking.values %}
+              {% unless booking.status.value == 'Cancelled' %}
+                |{{ booking.table.value.id }}_{{ booking.date.value | date: '%Y-%m-%d' }}|
+              {% endunless %}
+            {% endfor %}
+          {% endcapture %}
+
+          {% for n in (1..8) %}
+            {% assign table_handle = 'table-' | append: n %}
+            {% for block in section.blocks %}
+              {% if block.type == 'table' and block.settings.product.handle == table_handle %}
+                {% assign product = block.settings.product %}
+                <tr {{ block.shopify_attributes }}>
+                  <th class="table-availability__row-label">
+                    {{ block.settings.label | default: product.title | default: 'Table' }}
+                  </th>
+                  {% for i in (0..4) %}
+                    {% assign day_date = i | times: 86400 | plus: monday_ts | date: '%Y-%m-%d' %}
+                    {% assign key = '|' | append: product.id | append: '_' | append: day_date | append: '|' %}
+                    <td class="table-availability__cell table-availability__cell--{% if taken_keys contains key %}taken{% else %}available{% endif %}">
+                      {% if taken_keys contains key %}✗{% else %}✓{% endif %}
+                    </td>
+                  {% endfor %}
+                </tr>
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        {% endpaginate %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-availability__legend">
+    <span class="table-availability__legend-item table-availability__legend-item--available">✓ Available</span>
+    <span class="table-availability__legend-item table-availability__legend-item--taken">✗ Taken</span>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Table availability",
+  "tag": "section",
+  "class": "section-table-availability",
+  "settings": [
+    { "type": "range", "id": "max_width", "label": "Maximum width (px)", "min": 600, "max": 1400, "step": 20, "default": 1200 }
+  ],
+  "blocks": [
+    {
+      "type": "table",
+      "name": "Table",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product", "info": "Must match the Table field on your Booking metaobject entries" },
+        { "type": "text", "id": "label", "label": "Label override", "info": "Defaults to the product title" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Table availability",
+      "blocks": [
+        { "type": "table" }, { "type": "table" }, { "type": "table" }, { "type": "table" },
+        { "type": "table" }, { "type": "table" }, { "type": "table" }, { "type": "table" }
+      ]
+    }
+  ]
+}
+{% endschema %}
