@@ -60,12 +60,30 @@
               {% if row_label == blank %}
                 {% assign row_label = 'Table ' | append: forloop.index %}
               {% endif %}
+
+              {% assign week_fully_booked = true %}
+              {% for i in (0..4) %}
+                {% assign day_date = i | times: 86400 | plus: monday_ts | date: '%Y-%m-%d' %}
+                {% assign key = '|' | append: table_handle | append: '_' | append: day_date | append: '|' %}
+                {% assign key_by_id = '' %}
+                {% if product and product.id != blank %}
+                  {% assign key_by_id = '|id:' | append: product.id | append: '_' | append: day_date | append: '|' %}
+                {% endif %}
+                {% unless taken_keys contains key or key_by_id != '' and taken_keys contains key_by_id %}
+                  {% assign week_fully_booked = false %}
+                  {% break %}
+                {% endunless %}
+              {% endfor %}
+
               <tr
-                class="{% unless table_published %}table-availability__row--draft{% endunless %}"
+                class="
+                  {% if week_fully_booked %}table-availability__row--full{% endif %}
+                  {% unless table_published %}table-availability__row--draft{% endunless %}
+                "
                 {{ block.shopify_attributes }}
               >
                 <th class="table-availability__row-label">
-                  {% if product and table_published %}
+                  {% if product and table_published and week_fully_booked == false %}
                     <a class="table-availability__table-link" href="{{ product.url }}">
                       {{ row_label }}
                     </a>

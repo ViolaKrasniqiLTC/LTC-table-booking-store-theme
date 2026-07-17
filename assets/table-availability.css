@@ -148,6 +148,23 @@
   text-decoration: underline;
 }
 
+.table-availability__row--full {
+  opacity: 0.45;
+  filter: grayscale(100%);
+}
+
+.table-availability__row--full .table-availability__row-label {
+  color: #888;
+}
+
+.table-availability__row--full .table-availability__table-link {
+  color: #888;
+}
+
+.table-availability__row--full td {
+  background: #f2f2f2;
+}
+
 .table-availability__row--draft {
   opacity: 0.45;
   filter: grayscale(100%);
