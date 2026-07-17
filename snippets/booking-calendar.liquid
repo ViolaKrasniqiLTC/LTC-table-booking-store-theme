@@ -7,6 +7,7 @@
 
   <h2>Select Booking Dates</h2>
 
+
   <div id="calendar-container">
 
     <input
@@ -31,18 +32,28 @@
       id="booking-dates"
     >
 
+
+    <input
+      type="hidden"
+      name="properties[Table]"
+      value="{{ product.title }}"
+    >
+
   </div>
 
 </div>
 
 
+
+<!-- Validation Popup -->
+
 <div id="booking-popup" class="booking-popup">
 
   <div class="popup-content">
 
-    <h3>Maximum dates selected</h3>
+    <h3 id="popup-title"></h3>
 
-    <p>You can only select up to 3 booking days.</p>
+    <p id="popup-message"></p>
 
     <button id="close-popup">
       OK
@@ -53,6 +64,7 @@
 </div>
 
 
+
 <script>
 window.bookingData = {
     unavailableDates: [
@@ -60,7 +72,8 @@ window.bookingData = {
 
         {% for booking in shop.metaobjects.booking.values %}
 
-            {% if booking.status.value == 'Booked' and booking.table.value.id == product.id %}
+            {% if booking.status.value == 'Booked' 
+              and booking.table.value.id == product.id %}
 
                 {% unless first %},{% endunless %}
 
@@ -74,6 +87,7 @@ window.bookingData = {
     ]
 };
 </script>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
