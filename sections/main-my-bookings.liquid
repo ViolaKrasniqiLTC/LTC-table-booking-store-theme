@@ -2,19 +2,15 @@
 <script src="{{ 'my-bookings.js' | asset_url }}" defer="defer"></script>
 
 <div class="my-bookings">
-  <header class="my-bookings__header">
-    <h1 class="my-bookings__title">My Bookings</h1>
-
-    {% unless customer %}
+  {% unless customer %}
+    <header class="my-bookings__header">
       <div class="my-bookings__empty">
         <p>
           Please <a href="{{ routes.account_login_url }}?return_url={{ request.path }}">login</a> to view your bookings.
         </p>
       </div>
-    {% else %}
-      <p class="my-bookings__subtitle">Your upcoming and past table reservations.</p>
-    {% endunless %}
-  </header>
+    </header>
+  {% endunless %}
 
   {% if customer %}
     {% paginate customer.orders by 20 %}
