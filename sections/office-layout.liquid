@@ -43,22 +43,30 @@
       {% for block in section.blocks %}
         {% if block.type == 'table' %}
           {% assign product = block.settings.product %}
+
           <a
-            {% if product %}
+            {% if product and product.available %}
               href="{{ product.url }}"
             {% else %}
-              href="#" aria-disabled="true" tabindex="-1"
+              href="#"
+              aria-disabled="true"
+              tabindex="-1"
             {% endif %}
-            class="office-floor-plan__table {% if product == blank %}office-floor-plan__table--empty{% endif %}"
+            class="
+              office-floor-plan__table
+              {% unless product and product.available %}
+                office-floor-plan__table--unavailable
+              {% endunless %}
+            "
             style="
               --t-top: {{ block.settings.top }}%;
               --t-left: {{ block.settings.left }}%;
               --t-width: {{ block.settings.width }}%;
               --t-height: {{ block.settings.height }}%;
             "
-            {{ block.shopify_attributes }}
           >
             <span class="office-floor-plan__chair office-floor-plan__chair--{{ block.settings.chair_side }}" aria-hidden="true"></span>
+          
             <span class="office-floor-plan__table-label">
               {{ block.settings.label | default: product.title | default: 'Table' }}
             </span>

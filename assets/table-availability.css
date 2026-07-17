@@ -124,6 +124,25 @@
   text-decoration: underline;
 }
 
+.table-availability__row--draft {
+  opacity: 0.45;
+  filter: grayscale(100%);
+}
+
+.table-availability__row--draft .table-availability__row-label {
+  color: #888;
+  cursor: not-allowed;
+}
+
+.table-availability__table-label {
+  color: inherit;
+}
+
+.table-availability__cell--draft {
+  color: #999 !important;
+  pointer-events: none;
+}
+
 /* Medium screens (tablets) */
 @media screen and (max-width: 989px) {
   .table-availability {

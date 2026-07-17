@@ -32,37 +32,66 @@
           {% capture taken_keys %}
             {% for booking in shop.metaobjects.booking.values %}
               {% unless booking.status.value == 'Cancelled' %}
-                |{{ booking.table.value.id }}_{{ booking.date.value | date: '%Y-%m-%d' }}|
+                {% if booking.table.value.handle != blank %}
+                  |{{ booking.table.value.handle }}_{{ booking.date.value | date: '%Y-%m-%d' }}|
+                {% elsif booking.table.value.id != blank %}
+                  |id:{{ booking.table.value.id }}_{{ booking.date.value | date: '%Y-%m-%d' }}|
+                {% endif %}
               {% endunless %}
             {% endfor %}
           {% endcapture %}
 
-          {% for n in (1..8) %}
-            {% assign table_handle = 'table-' | append: n %}
-            {% for block in section.blocks %}
-              {% if block.type == 'table' and block.settings.product.handle == table_handle %}
-                {% assign product = block.settings.product %}
-                <tr {{ block.shopify_attributes }}>
-                  <th class="table-availability__row-label">
-                    {% if product %}
-                      <a class="table-availability__table-link" href="{{ product.url }}">
-                        {{ block.settings.label | default: product.title | default: 'Table' }}
-                      </a>
-                    {% else %}
-                      {{ block.settings.label | default: 'Table' }}
-                    {% endif %}
-                  </th>
-                  {% for i in (0..4) %}
-                    {% assign day_date = i | times: 86400 | plus: monday_ts | date: '%Y-%m-%d' %}
-                    {% assign key = '|' | append: product.id | append: '_' | append: day_date | append: '|' %}
-                    <td class="table-availability__cell table-availability__cell--{% if taken_keys contains key %}taken{% else %}available{% endif %}">
-                      {% if taken_keys contains key %}✗{% else %}✓{% endif %}
-                    </td>
-                  {% endfor %}
-                </tr>
-                {% break %}
+          {% for block in section.blocks %}
+            {% if block.type == 'table' %}
+              {% assign product = block.settings.product %}
+              {% if product and product.handle != blank %}
+                {% assign table_handle = product.handle %}
+              {% else %}
+                {% assign table_handle = 'table-' | append: forloop.index %}
               {% endif %}
-            {% endfor %}
+              {% assign table_published = false %}
+              {% if product and product.published_at %}
+                {% assign table_published = true %}
+              {% endif %}
+              {% assign row_label = block.settings.label %}
+              {% if row_label == blank and product.title != blank %}
+                {% assign row_label = product.title %}
+              {% endif %}
+              {% if row_label == blank %}
+                {% assign row_label = 'Table ' | append: forloop.index %}
+              {% endif %}
+              <tr
+                class="{% unless table_published %}table-availability__row--draft{% endunless %}"
+                {{ block.shopify_attributes }}
+              >
+                <th class="table-availability__row-label">
+                  {% if product and table_published %}
+                    <a class="table-availability__table-link" href="{{ product.url }}">
+                      {{ row_label }}
+                    </a>
+                  {% else %}
+                    <span class="table-availability__table-label">
+                      {{ row_label }}
+                    </span>
+                  {% endif %}
+                </th>
+                {% for i in (0..4) %}
+                  {% assign day_date = i | times: 86400 | plus: monday_ts | date: '%Y-%m-%d' %}
+                  {% assign key = '|' | append: table_handle | append: '_' | append: day_date | append: '|' %}
+                  {% assign key_by_id = '' %}
+                  {% if product and product.id != blank %}
+                    {% assign key_by_id = '|id:' | append: product.id | append: '_' | append: day_date | append: '|' %}
+                  {% endif %}
+                  {% assign is_taken = false %}
+                  {% if taken_keys contains key or key_by_id != '' and taken_keys contains key_by_id %}
+                    {% assign is_taken = true %}
+                  {% endif %}
+                  <td class="table-availability__cell table-availability__cell--{% if is_taken %}taken{% else %}available{% endif %}{% unless table_published %} table-availability__cell--draft{% endunless %}">
+                    {% if is_taken %}✗{% else %}✓{% endif %}
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endif %}
           {% endfor %}
         {% endpaginate %}
       </tbody>

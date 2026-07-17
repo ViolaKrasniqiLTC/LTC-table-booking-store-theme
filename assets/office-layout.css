@@ -236,6 +236,13 @@ div.office-floor-plan__door {
   bottom: -42%;
 }
 
+.office-floor-plan__table--unavailable {
+  opacity: 0.4;
+  filter: grayscale(100%);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 @media (max-width: 749px) {
   .office-floor-plan-layout {
     flex-direction: column;
