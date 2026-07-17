@@ -44,7 +44,13 @@
                 {% assign product = block.settings.product %}
                 <tr {{ block.shopify_attributes }}>
                   <th class="table-availability__row-label">
-                    {{ block.settings.label | default: product.title | default: 'Table' }}
+                    {% if product %}
+                      <a class="table-availability__table-link" href="{{ product.url }}">
+                        {{ block.settings.label | default: product.title | default: 'Table' }}
+                      </a>
+                    {% else %}
+                      {{ block.settings.label | default: 'Table' }}
+                    {% endif %}
                   </th>
                   {% for i in (0..4) %}
                     {% assign day_date = i | times: 86400 | plus: monday_ts | date: '%Y-%m-%d' %}

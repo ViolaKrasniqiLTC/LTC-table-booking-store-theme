@@ -115,6 +115,15 @@
   color: #e05d5d;
 }
 
+.table-availability__table-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.table-availability__table-link:hover {
+  text-decoration: underline;
+}
+
 /* Medium screens (tablets) */
 @media screen and (max-width: 989px) {
   .table-availability {
