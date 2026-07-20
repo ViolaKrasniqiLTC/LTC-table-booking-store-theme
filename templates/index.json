@@ -157,10 +157,7 @@
           }
         }
       },
-      "block_order": [
-        "heading_9jfezD",
-        "text_P97jYj"
-      ],
+      "block_order": ["heading_9jfezD", "text_P97jYj"],
       "name": "t:sections.rich-text.presets.name",
       "settings": {
         "desktop_content_position": "center",
@@ -243,7 +240,7 @@
       ],
       "name": "t:sections.table-availability.presets.name",
       "settings": {
-        "max_width": 1200
+        "max_width": 1280
       }
     }
   },

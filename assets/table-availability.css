@@ -10,8 +10,7 @@
 }
 
 .table-availability__scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: visible;
   margin: 0 -4px;
   padding: 0 4px;
 }
@@ -20,7 +19,7 @@
   width: 100%;
   table-layout: fixed;
   border-collapse: separate;
-  border-spacing: 0;
+  border-spacing: 6px 4px;
   min-width: 100%;
 }
 
@@ -47,17 +46,9 @@
   margin-top: 2px;
 }
 
-.table-availability__corner,
-.table-availability__row-label {
-  position: sticky;
-  left: 0;
-  z-index: 1;
-  background: #eaeaea;
-}
-
 .table-availability__corner {
   width: 14%;
-  z-index: 2;
+  background: #eaeaea;
 }
 
 .table-availability__grid thead th:not(.table-availability__corner),
@@ -76,7 +67,7 @@
   padding: 8px 10px;
   white-space: nowrap;
   font-size: clamp(11px, 1.1vw, 14px);
-  box-shadow: 4px 0 8px -4px rgba(0, 0, 0, 0.12);
+  background: #eaeaea;
 }
 
 .table-availability__cell {
