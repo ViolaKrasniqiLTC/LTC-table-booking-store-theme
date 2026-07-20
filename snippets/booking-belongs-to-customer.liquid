@@ -1,0 +1,35 @@
+{% comment %}
+  Sets booking_belongs and matched_order for the current booking + customer.
+  Usage:
+  {% render 'booking-belongs-to-customer', booking: booking, customer: customer %}
+{% endcomment %}
+
+{% assign booking_belongs = false %}
+{% assign matched_order = nil %}
+{% assign booking_order_id = booking.order_id.value | default: '' %}
+{% assign booking_customer = booking.customer.value %}
+{% assign ref_order = booking.order_reference.value %}
+
+{% for order in customer.orders %}
+  {% if booking_order_id contains order.name %}
+    {% assign booking_belongs = true %}
+    {% assign matched_order = order %}
+    {% break %}
+  {% endif %}
+
+  {% if ref_order != blank and ref_order.name == order.name %}
+    {% assign booking_belongs = true %}
+    {% assign matched_order = order %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+
+{% unless booking_belongs %}
+  {% if booking_customer != blank and booking_customer.email == customer.email %}
+    {% assign booking_belongs = true %}
+  {% endif %}
+{% endunless %}
+
+{% unless matched_order %}
+  {% assign matched_order = ref_order %}
+{% endunless %}
