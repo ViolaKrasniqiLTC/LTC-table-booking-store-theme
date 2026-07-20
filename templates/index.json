@@ -11,25 +11,6 @@
   "sections": {
     "rich_text_GmNbDT": {
       "type": "rich-text",
-      "blocks": {
-        "heading_MqrR3j": {
-          "type": "heading",
-          "settings": {
-            "heading": "LTC Office Layout",
-            "heading_size": "h1"
-          }
-        },
-        "text_BrAybX": {
-          "type": "text",
-          "settings": {
-            "text": "<p>Explore our modern office layout designed for productivity and collaboration. Our LTC Office features flexible workspaces, meeting rooms, and comfortable break areas to support your team's success.</p>"
-          }
-        }
-      },
-      "block_order": [
-        "heading_MqrR3j",
-        "text_BrAybX"
-      ],
       "name": "t:sections.rich-text.presets.name",
       "settings": {
         "desktop_content_position": "center",
@@ -154,8 +135,8 @@
       "settings": {
         "heading": "Choose your table",
         "description": "<p>Browse the office floor plan and select an available table. Each table links to its booking page where you can reserve a day that works for you.</p>",
-        "max_width": 1200,
-        "padding_top": 36,
+        "max_width": 1400,
+        "padding_top": 0,
         "padding_bottom": 36
       }
     },

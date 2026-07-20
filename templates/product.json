@@ -34,8 +34,8 @@
             "swatch_shape": "circle"
           }
         },
-        "quantity_selector": {
-          "type": "quantity_selector",
+        "booking_calendar_dbybWF": {
+          "type": "booking_calendar",
           "settings": {}
         },
         "buy_buttons": {
@@ -44,16 +44,6 @@
             "show_dynamic_checkout": true,
             "show_gift_card_recipient": true
           }
-        },
-        "description": {
-          "type": "description",
-          "settings": {}
-        },
-        "share": {
-          "type": "share",
-          "settings": {
-            "share_label": "Share"
-          }
         }
       },
       "block_order": [
@@ -61,10 +51,8 @@
         "title",
         "price",
         "variant_picker",
-        "quantity_selector",
-        "buy_buttons",
-        "description",
-        "share"
+        "booking_calendar_dbybWF",
+        "buy_buttons"
       ],
       "settings": {
         "enable_sticky_info": true,
@@ -85,6 +73,10 @@
     "disclosures": {
       "type": "disclosures",
       "settings": {
+        "heading": "Disclosures",
+        "heading_size": "h2",
+        "open_by_default": false,
+        "color_scheme": "",
         "padding_top": 36,
         "padding_bottom": 0
       }
