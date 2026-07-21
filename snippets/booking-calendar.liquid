@@ -104,7 +104,7 @@ window.bookingData = {
 window.customerBookingData = {
 
     bookedDays:
-    {{ customer.metafields.custom.upcoming_bookings_dates.value | default: 0 }}
+    {{ customer.metafields.custom.upcoming_bookings_dates.value | default: 0 | json}}
 
 };
 

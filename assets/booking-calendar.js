@@ -39,11 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
     function showPopup(title, message) {
 
         if (!popup) return;
-
 
         popupTitle.textContent = title;
 
@@ -56,17 +54,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
     if (closePopup) {
 
-        closePopup.addEventListener(
-            "click",
-            () => {
+        closePopup.addEventListener("click", () => {
 
-                popup.style.display = "none";
+            popup.style.display = "none";
 
-            }
-        );
+        });
 
     }
 
@@ -74,13 +68,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
     function moveBookingFieldsIntoForm() {
-
 
         const addToCartForm =
             document.querySelector(
                 'form[data-type="add-to-cart-form"]'
+            )
+            ||
+            document.querySelector(
+                "product-form form"
             );
 
 
@@ -95,7 +91,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         ].forEach(field => {
 
-
             if (field && !addToCartForm.contains(field)) {
 
                 addToCartForm.appendChild(field);
@@ -103,7 +98,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
         });
-
 
 
 
@@ -117,12 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
-
-
     moveBookingFieldsIntoForm();
-
-
 
 
 
@@ -142,7 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 event.target.closest(
                     "product-form form"
                 );
-
 
 
             if (!form) return;
@@ -178,9 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
     if (!input) return;
-
 
 
 
@@ -188,26 +174,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const today = new Date();
 
-    today.setHours(0, 0, 0, 0);
-
+    today.setHours(0,0,0,0);
 
 
 
 
     const nextMonday = new Date(today);
 
-    const day = today.getDay();
+    const currentDay = today.getDay();
 
 
 
     nextMonday.setDate(
         today.getDate() +
-        (day === 1 ? 7 : 8 - day)
+        (currentDay === 1 ? 7 : 8 - currentDay)
     );
 
 
-    nextMonday.setHours(0, 0, 0, 0);
-
+    nextMonday.setHours(0,0,0,0);
 
 
 
@@ -216,19 +200,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextFriday = new Date(nextMonday);
 
 
-
     nextFriday.setDate(
         nextMonday.getDate() + 4
     );
 
 
-    nextFriday.setHours(
-        23,
-        59,
-        59,
-        999
-    );
-
+    nextFriday.setHours(23,59,59,999);
 
 
 
@@ -243,19 +220,16 @@ document.addEventListener("DOMContentLoaded", () => {
             date.getFullYear();
 
 
+
         const month =
-            String(
-                date.getMonth() + 1
-            )
-            .padStart(2, "0");
+            String(date.getMonth() + 1)
+            .padStart(2,"0");
 
 
 
         const day =
-            String(
-                date.getDate()
-            )
-            .padStart(2, "0");
+            String(date.getDate())
+            .padStart(2,"0");
 
 
 
@@ -268,10 +242,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+    const minDate =
+        formatDate(nextMonday);
+
+
+    const maxDate =
+        formatDate(nextFriday);
+
+
+
+
+
 
 
 
     flatpickr(input, {
+
 
         inline: true,
 
@@ -296,17 +282,21 @@ document.addEventListener("DOMContentLoaded", () => {
                         formattedDate
                     )
 
-                    ||
-
-                    date < nextMonday
 
                     ||
 
-                    date > nextFriday
+                    formattedDate < minDate
+
+
+                    ||
+
+                    formattedDate > maxDate
+
 
                     ||
 
                     date.getDay() === 0
+
 
                     ||
 
@@ -322,9 +312,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
-
         onChange(selectedDates) {
+
 
 
             const totalDays =
@@ -334,23 +323,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+
             if (totalDays > MAX_BOOKING_DAYS) {
+
 
 
                 selectedDates.pop();
 
 
 
-                this.setDate(
-                    selectedDates
-                );
+                setTimeout(() => {
 
+                    this.setDate(
+                        selectedDates
+                    );
+
+                });
 
 
 
                 const remaining =
-                    MAX_BOOKING_DAYS -
-                    alreadyBookedDays;
+                    Math.max(
+                        MAX_BOOKING_DAYS - alreadyBookedDays,
+                        0
+                    );
 
 
 
@@ -358,6 +354,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 showPopup(
 
                     "Booking limit reached",
+
+                    remaining === 0
+
+                    ?
+
+                    "You already reached your maximum of 3 booking days."
+
+                    :
 
                     `You already have ${alreadyBookedDays} booked day(s). You can only select ${remaining} more day(s).`
 
@@ -368,8 +372,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
 
             }
-
-
 
 
 
@@ -415,8 +417,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+
             hiddenInput.value =
                 formattedDates.join(",");
+
 
 
 
@@ -432,7 +436,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     });
-
 
 
 });
