@@ -10,8 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const dateInput2 = document.querySelector("#booking-date-2");
     const dateInput3 = document.querySelector("#booking-date-3");
 
-    const bookingDetails = document.querySelector("#booking-details");
-
 
     const popup = document.querySelector("#booking-popup");
 
@@ -86,9 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
             tableInput,
             dateInput1,
             dateInput2,
-            dateInput3,
-            bookingDetails
-
+            dateInput3
         ].forEach(field => {
 
             if (field && !addToCartForm.contains(field)) {
@@ -168,8 +164,28 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
+    // Buy Now / dynamic checkout can only add a single line item.
+    // Booking dates must be added as separate lines via product-form.js.
+    document.addEventListener(
+        "click",
+        (event) => {
+            const buyNowButton = event.target.closest(
+                ".shopify-payment-button__button"
+            );
 
+            if (!buyNowButton) return;
 
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+
+            showPopup(
+                "Use Add to cart",
+                "Please use Add to cart so each booking date is added as its own line item."
+            );
+        },
+        true
+    );
 
 
     if (!input) return;
@@ -420,8 +436,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-            // Store each date separately as line item properties
-
+            // product-form.js reads these and adds one cart line per date
             if (dateInput1)
                 dateInput1.value = formattedDates[0] || "";
 
@@ -430,20 +445,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (dateInput3)
                 dateInput3.value = formattedDates[2] || "";
-
-
-
-
-
-
-            if (bookingDetails) {
-
-                bookingDetails.value =
-                    `Table: ${tableName} | Dates: ${formattedDates.join(", ")}`;
-
-            }
-
-
 
         }
 
