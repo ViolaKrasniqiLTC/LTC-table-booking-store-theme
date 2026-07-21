@@ -1,32 +1,23 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-
     const input = document.querySelector("#booking-date");
 
-    const selectedList =
-        document.querySelector("#selected-dates");
+    const selectedList = document.querySelector("#selected-dates");
 
-    const tableInput =
-        document.querySelector("#booking-table");
+    const tableInput = document.querySelector("#booking-table");
 
-    const hiddenInput =
-        document.querySelector("#booking-dates");
+    const hiddenInput = document.querySelector("#booking-dates");
 
-    const bookingDetails =
-        document.querySelector("#booking-details");
+    const bookingDetails = document.querySelector("#booking-details");
 
 
-    const popup =
-        document.querySelector("#booking-popup");
+    const popup = document.querySelector("#booking-popup");
 
-    const popupTitle =
-        document.querySelector("#popup-title");
+    const popupTitle = document.querySelector("#popup-title");
 
-    const popupMessage =
-        document.querySelector("#popup-message");
+    const popupMessage = document.querySelector("#popup-message");
 
-    const closePopup =
-        document.querySelector("#close-popup");
+    const closePopup = document.querySelector("#close-popup");
 
 
 
@@ -40,12 +31,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     const alreadyBookedDays =
-        Number(
-            window.customerBookingData?.bookedDays || 0
-        );
+        Number(window.customerBookingData?.bookedDays || 0);
+
 
 
     const MAX_BOOKING_DAYS = 3;
+
 
 
 
@@ -64,7 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-    if(closePopup){
+
+
+    if (closePopup) {
 
         closePopup.addEventListener(
             "click",
@@ -80,7 +73,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-    function moveBookingFieldsIntoForm(){
+
+
+    function moveBookingFieldsIntoForm() {
 
 
         const addToCartForm =
@@ -89,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        if(!addToCartForm) return;
+        if (!addToCartForm) return;
 
 
 
@@ -101,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ].forEach(field => {
 
 
-            if(field && !addToCartForm.contains(field)){
+            if (field && !addToCartForm.contains(field)) {
 
                 addToCartForm.appendChild(field);
 
@@ -111,7 +106,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-        if(tableInput){
+
+        if (tableInput) {
 
             tableInput.value = tableName;
 
@@ -121,7 +117,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+
+
+
     moveBookingFieldsIntoForm();
+
+
+
 
 
 
@@ -129,25 +131,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.addEventListener(
         "submit",
-        (event)=>{
+        (event) => {
 
 
             const form =
-            event.target.closest(
-                'form[data-type="add-to-cart-form"]'
-            )
-            ||
-            event.target.closest(
-                "product-form form"
-            );
+                event.target.closest(
+                    'form[data-type="add-to-cart-form"]'
+                )
+                ||
+                event.target.closest(
+                    "product-form form"
+                );
 
 
 
-            if(!form) return;
+            if (!form) return;
 
 
 
-            if(!hiddenInput.value.trim()){
+
+            if (!hiddenInput.value.trim()) {
 
 
                 event.preventDefault();
@@ -175,33 +178,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-    if(!input) return;
+
+    if (!input) return;
+
+
 
 
 
 
     const today = new Date();
 
-    today.setHours(0,0,0,0);
+    today.setHours(0, 0, 0, 0);
+
 
 
 
 
     const nextMonday = new Date(today);
 
-    const day =
-        today.getDay();
+    const day = today.getDay();
 
 
 
     nextMonday.setDate(
-        today.getDate()
-        +
+        today.getDate() +
         (day === 1 ? 7 : 8 - day)
     );
 
 
-    nextMonday.setHours(0,0,0,0);
+    nextMonday.setHours(0, 0, 0, 0);
+
+
 
 
 
@@ -209,8 +216,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextFriday = new Date(nextMonday);
 
 
+
     nextFriday.setDate(
-        nextMonday.getDate()+4
+        nextMonday.getDate() + 4
     );
 
 
@@ -225,7 +233,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-    function formatDate(date){
+
+
+
+    function formatDate(date) {
 
 
         const year =
@@ -234,9 +245,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const month =
             String(
-                date.getMonth()+1
+                date.getMonth() + 1
             )
-            .padStart(2,"0");
+            .padStart(2, "0");
 
 
 
@@ -244,7 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
             String(
                 date.getDate()
             )
-            .padStart(2,"0");
+            .padStart(2, "0");
 
 
 
@@ -258,20 +269,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+
+
     flatpickr(input, {
 
-
-        inline:true,
-
-
-        mode:"multiple",
+        inline: true,
 
 
+        mode: "multiple",
 
-        disable:[
 
 
-            (date)=>{
+        disable: [
+
+            (date) => {
 
 
                 const formattedDate =
@@ -305,27 +316,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
             }
 
-
         ],
 
 
 
 
 
-        onChange(selectedDates){
 
+
+        onChange(selectedDates) {
 
 
             const totalDays =
-
-                alreadyBookedDays
-                +
+                alreadyBookedDays +
                 selectedDates.length;
 
 
 
-            if(totalDays > MAX_BOOKING_DAYS){
 
+            if (totalDays > MAX_BOOKING_DAYS) {
 
 
                 selectedDates.pop();
@@ -338,11 +347,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-                const remaining =
 
-                    MAX_BOOKING_DAYS
-                    -
+                const remaining =
+                    MAX_BOOKING_DAYS -
                     alreadyBookedDays;
+
 
 
 
@@ -355,6 +364,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
+
                 return;
 
             }
@@ -363,8 +373,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-            const formattedDates =
 
+
+
+            const formattedDates =
                 selectedDates.map(
                     formatDate
                 );
@@ -373,20 +385,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-            selectedList.innerHTML="";
+
+            selectedList.innerHTML = "";
 
 
 
 
 
-            formattedDates.forEach(date=>{
+
+            formattedDates.forEach(date => {
 
 
                 const li =
                     document.createElement("li");
 
 
-                li.textContent=date;
+
+                li.textContent = date;
+
 
 
                 selectedList.appendChild(li);
@@ -398,17 +414,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-            hiddenInput.value =
 
+            hiddenInput.value =
                 formattedDates.join(",");
 
 
 
 
 
-            bookingDetails.value =
 
-            `Table: ${tableName} | Dates: ${formattedDates.join(", ")}`;
+            bookingDetails.value =
+                `Table: ${tableName} | Dates: ${formattedDates.join(", ")}`;
 
 
 
