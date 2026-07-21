@@ -195,6 +195,13 @@
             {% assign detail_category = 'past' %}
           {% endif %}
 
+          {% assign show_cancel_button = false %}
+          {% if detail_category == 'upcoming' %}
+            {% unless order != blank and order.cancelled %}
+              {% assign show_cancel_button = true %}
+            {% endunless %}
+          {% endif %}
+
           <div id="booking-{{ detail_id }}" class="booking-details">
             <a href="#my-bookings-list" class="booking-details__back">← Back to all bookings</a>
             <div class="booking-details__header">
@@ -214,7 +221,7 @@
               order: order,
               customer: customer,
               detail_id: detail_id,
-              show_cancel: detail_category == 'upcoming'
+              show_cancel: show_cancel_button
             %}
           </div>
         {% endif %}
