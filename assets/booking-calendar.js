@@ -7,6 +7,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const tableInput = document.querySelector("#booking-table");
 
 
+    const popup = document.querySelector("#booking-popup");
+    const popupTitle = document.querySelector("#popup-title");
+    const popupMessage = document.querySelector("#popup-message");
+    const closePopup = document.querySelector("#close-popup");
+
+
+
     const tableName =
         window.bookingData?.tableName || "Selected Table";
 
@@ -20,12 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     const MAX_BOOKING_DAYS = 3;
-
-
-    const popup = document.querySelector("#booking-popup");
-    const popupTitle = document.querySelector("#popup-title");
-    const popupMessage = document.querySelector("#popup-message");
-    const closePopup = document.querySelector("#close-popup");
 
 
 
@@ -50,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
     }
-
 
 
 
@@ -117,7 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return `${year}-${month}-${day}`;
 
     }
-
 
 
 
@@ -195,6 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
 
+
                 const remaining =
                     Math.max(
                         MAX_BOOKING_DAYS - alreadyBookedDays,
@@ -250,8 +250,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-            window.selectedBookingDates =
-                formattedDates;
+            // product-form.js will create separate cart lines
+            window.selectedBookingDates = formattedDates;
 
 
         }

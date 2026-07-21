@@ -17,6 +17,35 @@ if (!customElements.get('product-form')) {
         this.hideErrors = this.dataset.hideErrors === 'true';
       }
 
+      getBookingDates() {
+        return [
+          document.querySelector('#booking-date-1')?.value,
+          document.querySelector('#booking-date-2')?.value,
+          document.querySelector('#booking-date-3')?.value,
+        ].filter((date) => date && String(date).trim());
+      }
+
+      getBookingTableName() {
+        return (
+          document.querySelector('#booking-table')?.value ||
+          window.bookingData?.tableName ||
+          ''
+        );
+      }
+
+      buildBookingItems(variantId, dates) {
+        const tableName = this.getBookingTableName();
+
+        return dates.map((date) => ({
+          id: Number(variantId),
+          quantity: 1,
+          properties: {
+            ...(tableName ? { Table: tableName } : {}),
+            'Booking Date': date,
+          },
+        }));
+      }
+
       onSubmitHandler(evt) {
         evt.preventDefault();
         if (this.submitButton.getAttribute('aria-disabled') === 'true') return;
@@ -27,24 +56,46 @@ if (!customElements.get('product-form')) {
         this.submitButton.classList.add('loading');
         this.querySelector('.loading__spinner').classList.remove('hidden');
 
+        const formData = new FormData(this.form);
+        const variantId = formData.get('id');
+        const bookingDates = this.getBookingDates();
+        const quantity =
+          bookingDates.length > 0 ? bookingDates.length : parseInt(formData.get('quantity'), 10) || 1;
+        const linesUpdateDeferred = this.createCartLinesUpdateEvent(
+          variantId,
+          quantity,
+          bookingDates.length > 0 ? bookingDates : null
+        );
+
         const config = fetchConfig('javascript');
         config.headers['X-Requested-With'] = 'XMLHttpRequest';
-        delete config.headers['Content-Type'];
 
-        const formData = new FormData(this.form);
-        if (this.cart) {
-          formData.append(
-            'sections',
-            this.cart.getSectionsToRender().map((section) => section.id)
-          );
-          formData.append('sections_url', window.location.pathname);
-          this.cart.setActiveElement(document.activeElement);
+        if (bookingDates.length > 0) {
+          const body = {
+            items: this.buildBookingItems(variantId, bookingDates),
+          };
+
+          if (this.cart) {
+            body.sections = this.cart.getSectionsToRender().map((section) => section.id).join(',');
+            body.sections_url = window.location.pathname;
+            this.cart.setActiveElement(document.activeElement);
+          }
+
+          config.body = JSON.stringify(body);
+        } else {
+          delete config.headers['Content-Type'];
+
+          if (this.cart) {
+            formData.append(
+              'sections',
+              this.cart.getSectionsToRender().map((section) => section.id)
+            );
+            formData.append('sections_url', window.location.pathname);
+            this.cart.setActiveElement(document.activeElement);
+          }
+
+          config.body = formData;
         }
-        config.body = formData;
-
-        const variantId = formData.get('id');
-        const quantity = parseInt(formData.get('quantity')) || 1;
-        const linesUpdateDeferred = this.createCartLinesUpdateEvent(variantId, quantity);
 
         fetch(`${routes.cart_add_url}`, config)
           .then((response) => response.json())
@@ -145,16 +196,21 @@ if (!customElements.get('product-form')) {
         }
       }
 
-      createCartLinesUpdateEvent(variantId, quantity) {
+      createCartLinesUpdateEvent(variantId, quantity, bookingDates = null) {
         const { CartLinesUpdateEvent } = window.StandardEvents || {};
         if (!CartLinesUpdateEvent) return null;
 
         const deferred = CartLinesUpdateEvent.createPromise();
+        const lines =
+          bookingDates?.length > 0
+            ? bookingDates.map(() => ({ merchandiseId: variantId, quantity: 1 }))
+            : [{ merchandiseId: variantId, quantity }];
+
         this.dispatchEvent(
           new CartLinesUpdateEvent({
             action: 'add',
             context: 'product',
-            lines: [{ merchandiseId: variantId, quantity }],
+            lines,
             promise: deferred.promise,
           })
         );
