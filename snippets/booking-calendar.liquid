@@ -1,6 +1,7 @@
 {{ 'booking-calendar.css' | asset_url | stylesheet_tag }}
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+
 
 <div class="booking-calendar">
 
@@ -14,6 +15,7 @@
       readonly
     >
 
+
     <div class="selected-wrapper">
 
       <h3>Selected Dates:</h3>
@@ -22,6 +24,7 @@
 
     </div>
 
+
     <input
       type="hidden"
       name="properties[Table]"
@@ -29,11 +32,13 @@
       value="{{ product.title }}"
     >
 
+
     <input
       type="hidden"
       name="properties[Booking Dates]"
       id="booking-dates"
     >
+
 
     <input
       type="hidden"
@@ -44,6 +49,7 @@
   </div>
 
 </div>
+
 
 
 <div id="booking-popup" class="booking-popup">
@@ -63,21 +69,47 @@
 </div>
 
 
+
 <script>
+
 window.bookingData = {
+
     tableName: "{{ product.title | escape }}",
+
     unavailableDates: [
+
         {% assign first = true %}
+
         {% for booking in shop.metaobjects.booking.values %}
-            {% if booking.status.value == "Booked" and booking.table.value.id == product.id %}
+
+            {% if booking.status.value == "Booked" 
+              and booking.table.value.id == product.id %}
+
                 {% unless first %},{% endunless %}
+
                 "{{ booking.date.value }}"
+
                 {% assign first = false %}
+
             {% endif %}
+
         {% endfor %}
+
     ]
+
 };
+
+
+
+window.customerBookingData = {
+
+    bookedDays:
+    {{ customer.metafields.custom.upcoming_bookings_dates.value | default: 0 }}
+
+};
+
 </script>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>

@@ -1,44 +1,61 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+
     const input = document.querySelector("#booking-date");
-    const selectedList = document.querySelector("#selected-dates");
-    const tableInput = document.querySelector("#booking-table");
-    const hiddenInput = document.querySelector("#booking-dates");
-    const bookingDetails = document.querySelector("#booking-details");
-    const counter = document.querySelector("#date-counter");
 
-    const popup = document.querySelector("#booking-popup");
-    const popupTitle = document.querySelector("#popup-title");
-    const popupMessage = document.querySelector("#popup-message");
-    const closePopup = document.querySelector("#close-popup");
+    const selectedList =
+        document.querySelector("#selected-dates");
+
+    const tableInput =
+        document.querySelector("#booking-table");
+
+    const hiddenInput =
+        document.querySelector("#booking-dates");
+
+    const bookingDetails =
+        document.querySelector("#booking-details");
 
 
-    const tableName = window.bookingData?.tableName || "Selected Table";
-    const unavailableDates = window.bookingData?.unavailableDates || [];
+    const popup =
+        document.querySelector("#booking-popup");
 
-    function moveBookingFieldsIntoForm() {
-        const addToCartForm = document.querySelector('form[data-type="add-to-cart-form"]');
+    const popupTitle =
+        document.querySelector("#popup-title");
 
-        if (!addToCartForm) return;
+    const popupMessage =
+        document.querySelector("#popup-message");
 
-        [tableInput, hiddenInput, bookingDetails].forEach((field) => {
-            if (field && !addToCartForm.contains(field)) {
-                addToCartForm.appendChild(field);
-            }
-        });
+    const closePopup =
+        document.querySelector("#close-popup");
 
-        if (tableInput) {
-            tableInput.value = tableName;
-        }
-    }
 
-    moveBookingFieldsIntoForm();
+
+    const tableName =
+        window.bookingData?.tableName || "Selected Table";
+
+
+    const unavailableDates =
+        window.bookingData?.unavailableDates || [];
+
+
+
+    const alreadyBookedDays =
+        Number(
+            window.customerBookingData?.bookedDays || 0
+        );
+
+
+    const MAX_BOOKING_DAYS = 3;
+
+
 
     function showPopup(title, message) {
 
         if (!popup) return;
 
+
         popupTitle.textContent = title;
+
         popupMessage.textContent = message;
 
         popup.style.display = "flex";
@@ -46,77 +63,121 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    if (closePopup) {
 
-        closePopup.addEventListener("click", () => {
+    if(closePopup){
 
-            popup.style.display = "none";
+        closePopup.addEventListener(
+            "click",
+            () => {
 
-        });
+                popup.style.display = "none";
+
+            }
+        );
 
     }
 
 
-    document.addEventListener(
-        "submit",
-        (event) => {
-
-            const form = event.target.closest('form[data-type="add-to-cart-form"]') || event.target.closest("product-form form");
-
-            if (!form) return;
 
 
-            if (!hiddenInput.value.trim()) {
-
-                event.preventDefault();
-                event.stopPropagation();
-                event.stopImmediatePropagation();
+    function moveBookingFieldsIntoForm(){
 
 
-                showPopup(
-                    "No dates selected",
-                    "Please select at least one booking date before adding the table to your cart."
-                );
-
-            }
-
-        },
-        true
-    );
-
-
-    document.addEventListener(
-        "click",
-        (event) => {
-
-            const buyNowButton = event.target.closest(
-                ".shopify-payment-button__button"
+        const addToCartForm =
+            document.querySelector(
+                'form[data-type="add-to-cart-form"]'
             );
 
 
-            if (!buyNowButton) return;
+        if(!addToCartForm) return;
 
 
-            if (!hiddenInput.value.trim()) {
+
+        [
+            tableInput,
+            hiddenInput,
+            bookingDetails
+
+        ].forEach(field => {
+
+
+            if(field && !addToCartForm.contains(field)){
+
+                addToCartForm.appendChild(field);
+
+            }
+
+        });
+
+
+
+        if(tableInput){
+
+            tableInput.value = tableName;
+
+        }
+
+    }
+
+
+
+    moveBookingFieldsIntoForm();
+
+
+
+
+
+    document.addEventListener(
+        "submit",
+        (event)=>{
+
+
+            const form =
+            event.target.closest(
+                'form[data-type="add-to-cart-form"]'
+            )
+            ||
+            event.target.closest(
+                "product-form form"
+            );
+
+
+
+            if(!form) return;
+
+
+
+            if(!hiddenInput.value.trim()){
+
 
                 event.preventDefault();
+
                 event.stopPropagation();
+
                 event.stopImmediatePropagation();
+
 
 
                 showPopup(
                     "No dates selected",
-                    "Please select at least one booking date before continuing to checkout."
+                    "Please select at least one booking date."
                 );
 
             }
+
 
         },
         true
     );
 
 
-    if (!input) return;
+
+
+
+
+    if(!input) return;
+
+
 
 
     const today = new Date();
@@ -124,13 +185,19 @@ document.addEventListener("DOMContentLoaded", () => {
     today.setHours(0,0,0,0);
 
 
+
+
     const nextMonday = new Date(today);
 
-    const day = today.getDay();
+    const day =
+        today.getDay();
+
 
 
     nextMonday.setDate(
-        today.getDate() + (day === 1 ? 7 : 8 - day)
+        today.getDate()
+        +
+        (day === 1 ? 7 : 8 - day)
     );
 
 
@@ -138,121 +205,218 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+
     const nextFriday = new Date(nextMonday);
 
+
     nextFriday.setDate(
-        nextMonday.getDate() + 4
+        nextMonday.getDate()+4
     );
 
-    nextFriday.setHours(23,59,59,999);
+
+    nextFriday.setHours(
+        23,
+        59,
+        59,
+        999
+    );
 
 
 
-    const formatDate = (date) => {
 
-        const year = date.getFullYear();
 
-        const month = String(
-            date.getMonth() + 1
-        ).padStart(2,"0");
+    function formatDate(date){
 
-        const day = String(
-            date.getDate()
-        ).padStart(2,"0");
+
+        const year =
+            date.getFullYear();
+
+
+        const month =
+            String(
+                date.getMonth()+1
+            )
+            .padStart(2,"0");
+
+
+
+        const day =
+            String(
+                date.getDate()
+            )
+            .padStart(2,"0");
+
 
 
         return `${year}-${month}-${day}`;
 
-    };
+    }
+
+
+
+
 
 
 
     flatpickr(input, {
 
-        inline: true,
 
-        mode: "multiple",
+        inline:true,
 
 
-        disable: [
+        mode:"multiple",
 
-            (date) => {
 
-                const formattedDate = formatDate(date);
+
+        disable:[
+
+
+            (date)=>{
+
+
+                const formattedDate =
+                    formatDate(date);
+
 
 
                 return (
-                    unavailableDates.includes(formattedDate) ||
-                    date < nextMonday ||
-                    date > nextFriday ||
-                    date.getDay() === 0 ||
+
+                    unavailableDates.includes(
+                        formattedDate
+                    )
+
+                    ||
+
+                    date < nextMonday
+
+                    ||
+
+                    date > nextFriday
+
+                    ||
+
+                    date.getDay() === 0
+
+                    ||
+
                     date.getDay() === 6
+
                 );
 
             }
 
+
         ],
 
 
-        onChange(selectedDates) {
 
 
-            if (selectedDates.length > 3) {
+
+        onChange(selectedDates){
+
+
+
+            const totalDays =
+
+                alreadyBookedDays
+                +
+                selectedDates.length;
+
+
+
+            if(totalDays > MAX_BOOKING_DAYS){
+
+
 
                 selectedDates.pop();
 
-                this.setDate(selectedDates);
+
+
+                this.setDate(
+                    selectedDates
+                );
+
+
+
+                const remaining =
+
+                    MAX_BOOKING_DAYS
+                    -
+                    alreadyBookedDays;
+
 
 
                 showPopup(
-                    "Maximum dates reached",
-                    "You can only select up to 3 booking days."
+
+                    "Booking limit reached",
+
+                    `You already have ${alreadyBookedDays} booked day(s). You can only select ${remaining} more day(s).`
+
                 );
+
 
                 return;
 
             }
 
 
+
+
+
             const formattedDates =
-                selectedDates.map(formatDate);
+
+                selectedDates.map(
+                    formatDate
+                );
 
 
 
-            selectedList.innerHTML = "";
 
 
-            formattedDates.forEach((date) => {
+            selectedList.innerHTML="";
 
-                const li = document.createElement("li");
 
-                li.textContent = date;
+
+
+
+            formattedDates.forEach(date=>{
+
+
+                const li =
+                    document.createElement("li");
+
+
+                li.textContent=date;
+
 
                 selectedList.appendChild(li);
+
 
             });
 
 
 
+
+
             hiddenInput.value =
+
                 formattedDates.join(",");
 
 
 
+
+
             bookingDetails.value =
-                `Table: ${tableName} | Dates: ${formattedDates.join(", ")}`;
+
+            `Table: ${tableName} | Dates: ${formattedDates.join(", ")}`;
 
 
-
-            if (counter) {
-
-                counter.textContent =
-                    `${formattedDates.length}/3`;
-
-            }
 
         }
 
+
     });
+
+
 
 });
