@@ -6,7 +6,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const tableInput = document.querySelector("#booking-table");
 
-    const hiddenInput = document.querySelector("#booking-dates");
+    const dateInput1 = document.querySelector("#booking-date-1");
+    const dateInput2 = document.querySelector("#booking-date-2");
+    const dateInput3 = document.querySelector("#booking-date-3");
 
     const bookingDetails = document.querySelector("#booking-details");
 
@@ -20,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const closePopup = document.querySelector("#close-popup");
 
 
-
     const tableName =
         window.bookingData?.tableName || "Selected Table";
 
@@ -29,10 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
         window.bookingData?.unavailableDates || [];
 
 
-
     const alreadyBookedDays =
         Number(window.customerBookingData?.bookedDays || 0);
-
 
 
     const MAX_BOOKING_DAYS = 3;
@@ -50,7 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
         popup.style.display = "flex";
 
     }
-
 
 
 
@@ -86,7 +84,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         [
             tableInput,
-            hiddenInput,
+            dateInput1,
+            dateInput2,
+            dateInput3,
             bookingDetails
 
         ].forEach(field => {
@@ -137,8 +137,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+            const hasDates =
+                dateInput1?.value ||
+                dateInput2?.value ||
+                dateInput3?.value;
 
-            if (!hiddenInput.value.trim()) {
+
+
+            if (!hasDates) {
 
 
                 event.preventDefault();
@@ -212,7 +218,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
     function formatDate(date) {
 
 
@@ -236,7 +241,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return `${year}-${month}-${day}`;
 
     }
-
 
 
 
@@ -319,7 +323,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const totalDays =
                 alreadyBookedDays +
                 selectedDates.length;
-
 
 
 
@@ -417,18 +420,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+            // Store each date separately as line item properties
 
-            hiddenInput.value =
-                formattedDates.join(",");
+            if (dateInput1)
+                dateInput1.value = formattedDates[0] || "";
+
+            if (dateInput2)
+                dateInput2.value = formattedDates[1] || "";
+
+            if (dateInput3)
+                dateInput3.value = formattedDates[2] || "";
 
 
 
 
 
 
+            if (bookingDetails) {
 
-            bookingDetails.value =
-                `Table: ${tableName} | Dates: ${formattedDates.join(", ")}`;
+                bookingDetails.value =
+                    `Table: ${tableName} | Dates: ${formattedDates.join(", ")}`;
+
+            }
 
 
 
