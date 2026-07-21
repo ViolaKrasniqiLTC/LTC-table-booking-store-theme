@@ -6,21 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const tableInput = document.querySelector("#booking-table");
 
-    const dateInput1 = document.querySelector("#booking-date-1");
-    const dateInput2 = document.querySelector("#booking-date-2");
-    const dateInput3 = document.querySelector("#booking-date-3");
-
-    const bookingDetails = document.querySelector("#booking-details");
-
-
-    const popup = document.querySelector("#booking-popup");
-
-    const popupTitle = document.querySelector("#popup-title");
-
-    const popupMessage = document.querySelector("#popup-message");
-
-    const closePopup = document.querySelector("#close-popup");
-
 
     const tableName =
         window.bookingData?.tableName || "Selected Table";
@@ -37,15 +22,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const MAX_BOOKING_DAYS = 3;
 
 
+    const popup = document.querySelector("#booking-popup");
+    const popupTitle = document.querySelector("#popup-title");
+    const popupMessage = document.querySelector("#popup-message");
+    const closePopup = document.querySelector("#close-popup");
+
+
 
     function showPopup(title, message) {
 
         if (!popup) return;
 
         popupTitle.textContent = title;
-
         popupMessage.textContent = message;
-
         popup.style.display = "flex";
 
     }
@@ -65,116 +54,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+    if (tableInput) {
 
-    function moveBookingFieldsIntoForm() {
-
-        const addToCartForm =
-            document.querySelector(
-                'form[data-type="add-to-cart-form"]'
-            )
-            ||
-            document.querySelector(
-                "product-form form"
-            );
-
-
-        if (!addToCartForm) return;
-
-
-
-        [
-            tableInput,
-            dateInput1,
-            dateInput2,
-            dateInput3,
-            bookingDetails
-
-        ].forEach(field => {
-
-            if (field && !addToCartForm.contains(field)) {
-
-                addToCartForm.appendChild(field);
-
-            }
-
-        });
-
-
-
-        if (tableInput) {
-
-            tableInput.value = tableName;
-
-        }
+        tableInput.value = tableName;
 
     }
 
 
 
-    moveBookingFieldsIntoForm();
-
-
-
-
-
-
-    document.addEventListener(
-        "submit",
-        (event) => {
-
-
-            const form =
-                event.target.closest(
-                    'form[data-type="add-to-cart-form"]'
-                )
-                ||
-                event.target.closest(
-                    "product-form form"
-                );
-
-
-            if (!form) return;
-
-
-
-            const hasDates =
-                dateInput1?.value ||
-                dateInput2?.value ||
-                dateInput3?.value;
-
-
-
-            if (!hasDates) {
-
-
-                event.preventDefault();
-
-                event.stopPropagation();
-
-                event.stopImmediatePropagation();
-
-
-
-                showPopup(
-                    "No dates selected",
-                    "Please select at least one booking date."
-                );
-
-            }
-
-
-        },
-        true
-    );
-
-
-
-
-
-
     if (!input) return;
-
-
 
 
 
@@ -184,11 +72,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
     const nextMonday = new Date(today);
 
     const currentDay = today.getDay();
-
 
 
     nextMonday.setDate(
@@ -198,8 +84,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     nextMonday.setHours(0,0,0,0);
-
-
 
 
 
@@ -217,25 +101,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
     function formatDate(date) {
 
-
-        const year =
-            date.getFullYear();
-
-
+        const year = date.getFullYear();
 
         const month =
             String(date.getMonth() + 1)
             .padStart(2,"0");
 
-
-
         const day =
             String(date.getDate())
             .padStart(2,"0");
-
 
 
         return `${year}-${month}-${day}`;
@@ -246,15 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-    const minDate =
-        formatDate(nextMonday);
+    const minDate = formatDate(nextMonday);
 
-
-    const maxDate =
-        formatDate(nextFriday);
-
-
-
+    const maxDate = formatDate(nextFriday);
 
 
 
@@ -262,45 +132,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
     flatpickr(input, {
 
-
         inline: true,
 
-
         mode: "multiple",
-
 
 
         disable: [
 
             (date) => {
 
-
                 const formattedDate =
                     formatDate(date);
 
 
-
                 return (
 
-                    unavailableDates.includes(
-                        formattedDate
-                    )
-
+                    unavailableDates.includes(formattedDate)
 
                     ||
 
                     formattedDate < minDate
 
-
                     ||
 
                     formattedDate > maxDate
 
-
                     ||
 
                     date.getDay() === 0
-
 
                     ||
 
@@ -314,10 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
-
         onChange(selectedDates) {
-
 
 
             const totalDays =
@@ -326,23 +182,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
             if (totalDays > MAX_BOOKING_DAYS) {
-
 
 
                 selectedDates.pop();
 
 
-
                 setTimeout(() => {
 
-                    this.setDate(
-                        selectedDates
-                    );
+                    this.setDate(selectedDates);
 
                 });
-
 
 
                 const remaining =
@@ -353,9 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
                 showPopup(
-
                     "Booking limit reached",
 
                     remaining === 0
@@ -371,7 +219,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-
                 return;
 
             }
@@ -379,15 +226,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
-
             const formattedDates =
-                selectedDates.map(
-                    formatDate
-                );
-
-
-
+                selectedDates.map(formatDate);
 
 
 
@@ -395,58 +235,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
-
-
             formattedDates.forEach(date => {
-
 
                 const li =
                     document.createElement("li");
 
 
-
                 li.textContent = date;
 
 
-
                 selectedList.appendChild(li);
-
 
             });
 
 
 
-
-
-
-            // Store each date separately as line item properties
-
-            if (dateInput1)
-                dateInput1.value = formattedDates[0] || "";
-
-            if (dateInput2)
-                dateInput2.value = formattedDates[1] || "";
-
-            if (dateInput3)
-                dateInput3.value = formattedDates[2] || "";
-
-
-
-
-
-
-            if (bookingDetails) {
-
-                bookingDetails.value =
-                    `Table: ${tableName} | Dates: ${formattedDates.join(", ")}`;
-
-            }
-
+            window.selectedBookingDates =
+                formattedDates;
 
 
         }
-
 
     });
 
