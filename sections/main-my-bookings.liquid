@@ -76,103 +76,132 @@
         </div>
       {% endif %}
 
-      <div id="my-bookings-list" class="my-bookings__list">
-        {% for booking in shop.metaobjects.booking.values %}
-          {% include 'booking-belongs-to-customer', booking: booking, customer: customer %}
-          {% if booking_belongs %}
-            {% assign order = matched_order %}
-            {% assign booking_customer = booking.customer.value %}
-            {% assign booking_order = booking.order_reference.value | default: booking.order.value %}
-            {% assign status = booking.status.value | default: 'Booked' %}
-            {% assign status_class = status | strip | downcase %}
-            {% assign booking_id = booking.booking_id.value | default: order.name %}
-            {% assign table_product = booking.table.value %}
-            {% assign table_image = table_product.featured_media | default: table_product.featured_image %}
-            {% assign category = 'upcoming' %}
-            {% if status_class == 'cancelled' or status_class == 'canceled' %}
-              {% assign category = 'cancelled' %}
-            {% elsif status_class == 'completed' %}
-              {% assign category = 'past' %}
-            {% endif %}
+      <div class="my-bookings__layout{% if section.blocks.size > 0 %} my-bookings__layout--with-form{% endif %}">
+        <div id="my-bookings-list" class="my-bookings__list">
+          {% for booking in shop.metaobjects.booking.values %}
+            {% include 'booking-belongs-to-customer', booking: booking, customer: customer %}
+            {% if booking_belongs %}
+              {% assign order = matched_order %}
+              {% assign booking_customer = booking.customer.value %}
+              {% assign booking_order = booking.order_reference.value | default: booking.order.value %}
+              {% assign status = booking.status.value | default: 'Booked' %}
+              {% assign status_class = status | strip | downcase %}
+              {% assign booking_id = booking.booking_id.value | default: order.name %}
+              {% assign table_product = booking.table.value %}
+              {% assign table_image = table_product.featured_media | default: table_product.featured_image %}
+              {% assign category = 'upcoming' %}
+              {% if status_class == 'cancelled' or status_class == 'canceled' %}
+                {% assign category = 'cancelled' %}
+              {% elsif status_class == 'completed' %}
+                {% assign category = 'past' %}
+              {% endif %}
 
-            <article
-              class="my-bookings__card{% unless category == 'upcoming' %} my-bookings__card--hidden{% endunless %}"
-              data-category="{{ category }}"
-              data-order-date="{{ booking.date.value | date: '%s' }}"
-            >
-              <div class="my-bookings__card-media">
-                {% if table_image %}
-                  {{
-                    table_image
-                    | image_url: width: 700
-                    | image_tag:
-                      loading: 'lazy',
-                      class: 'my-bookings__card-image',
-                      alt: table_product.title
-                  }}
-                {% else %}
-                  <div class="my-bookings__card-image-placeholder">
-                    {{ 'product-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
-                  </div>
-                {% endif %}
-              </div>
-
-              <div class="my-bookings__card-content">
-                <div class="my-bookings__card-top">
-                  <p class="my-bookings__card-id">
-                    {%- if booking_id contains 'Booking' or booking_id contains 'BK' -%}
-                      {{ booking_id }}
-                    {%- else -%}
-                      Booking #{{ booking_id }}
-                    {%- endif -%}
-                  </p>
-                  <span class="my-bookings__status my-bookings__status--{{ status_class }}">
-                    {{ status }}
-                  </span>
+              <article
+                class="my-bookings__card{% unless category == 'upcoming' %} my-bookings__card--hidden{% endunless %}"
+                data-category="{{ category }}"
+                data-order-date="{{ booking.date.value | date: '%s' }}"
+              >
+                <div class="my-bookings__card-media">
+                  {% if table_image %}
+                    {{
+                      table_image
+                      | image_url: width: 700
+                      | image_tag:
+                        loading: 'lazy',
+                        class: 'my-bookings__card-image',
+                        alt: table_product.title
+                    }}
+                  {% else %}
+                    <div class="my-bookings__card-image-placeholder">
+                      {{ 'product-apparel-2' | placeholder_svg_tag: 'placeholder-svg' }}
+                    </div>
+                  {% endif %}
                 </div>
 
-                <dl class="my-bookings__card-body">
-                  <div class="my-bookings__meta">
-                    <dt>Table</dt>
-                    <dd>{{ booking.table.value.title | default: '—' }}</dd>
+                <div class="my-bookings__card-content">
+                  <div class="my-bookings__card-top">
+                    {% assign copy_booking_id = booking_id | remove: 'Booking' | strip | replace: '#', '' | prepend: '#' %}
+                    <div class="my-bookings__card-id-row">
+                      <p class="my-bookings__card-id">
+                        Booking
+                        <span class="my-bookings__card-id-value">{{ copy_booking_id }}</span>
+                      </p>
+                      <button
+                        type="button"
+                        class="my-bookings__copy-id"
+                        data-copy-id="{{ copy_booking_id | escape }}"
+                        aria-label="Copy booking ID {{ copy_booking_id | escape }}"
+                        title="Copy booking ID"
+                      >
+                        <span class="my-bookings__copy-id-icon" aria-hidden="true">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                          </svg>
+                        </span>
+                        <span class="my-bookings__copy-id-done" aria-hidden="true" hidden>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                    <span class="my-bookings__status my-bookings__status--{{ status_class }}">
+                      {{ status }}
+                    </span>
                   </div>
-                  <div class="my-bookings__meta">
-                    <dt>Date</dt>
-                    <dd>{{ booking.date.value | default: '—' }}</dd>
-                  </div>
-                  <div class="my-bookings__meta">
-                    <dt>Customer</dt>
-                    <dd>
-                      {% if booking_customer.first_name != blank %}
-                        {{ booking_customer.first_name }} {{ booking_customer.last_name }}
-                      {% else %}
-                        {{ customer.name }}
-                      {% endif %}
-                    </dd>
-                  </div>
-                  <div class="my-bookings__meta">
-                    <dt>Email</dt>
-                    <dd>{{ booking.customer_email.value | default: booking_customer.email | default: customer.email }}</dd>
-                  </div>
-                  <div class="my-bookings__meta">
-                    <dt>Order reference</dt>
-                    <dd>{{ booking_order.name | default: order.name | default: '—' }}</dd>
-                  </div>
-                  <div class="my-bookings__meta">
-                    <dt>Order date</dt>
-                    <dd>
-                      {% if order %}
-                        {{ order.created_at | date: '%d %b %Y' }}
-                      {% else %}
-                        —
-                      {% endif %}
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-            </article>
-          {% endif %}
-        {% endfor %}
+
+                  <dl class="my-bookings__card-body">
+                    <div class="my-bookings__meta">
+                      <dt>Table</dt>
+                      <dd>{{ booking.table.value.title | default: '—' }}</dd>
+                    </div>
+                    <div class="my-bookings__meta">
+                      <dt>Date</dt>
+                      <dd>{{ booking.date.value | default: '—' }}</dd>
+                    </div>
+                    <div class="my-bookings__meta">
+                      <dt>Customer</dt>
+                      <dd>
+                        {% if booking_customer.first_name != blank %}
+                          {{ booking_customer.first_name }} {{ booking_customer.last_name }}
+                        {% else %}
+                          {{ customer.name }}
+                        {% endif %}
+                      </dd>
+                    </div>
+                    <div class="my-bookings__meta">
+                      <dt>Email</dt>
+                      <dd>{{ booking.customer_email.value | default: booking_customer.email | default: customer.email }}</dd>
+                    </div>
+                    <div class="my-bookings__meta">
+                      <dt>Order reference</dt>
+                      <dd>{{ booking_order.name | default: order.name | default: '—' }}</dd>
+                    </div>
+                    <div class="my-bookings__meta">
+                      <dt>Order date</dt>
+                      <dd>
+                        {% if order %}
+                          {{ order.created_at | date: '%d %b %Y' }}
+                        {% else %}
+                          —
+                        {% endif %}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              </article>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        {% if section.blocks.size > 0 %}
+          <aside class="my-bookings__form">
+            {% for block in section.blocks %}
+              {% render block %}
+            {% endfor %}
+          </aside>
+        {% endif %}
       </div>
 
       <p class="my-bookings__empty-tab" hidden>No bookings in this category.</p>
@@ -185,12 +214,27 @@
 
     {% endpaginate %}
   {% endif %}
+
+  {% unless customer %}
+    {% if section.blocks.size > 0 %}
+      <aside class="my-bookings__form my-bookings__form--standalone">
+        {% for block in section.blocks %}
+          {% render block %}
+        {% endfor %}
+      </aside>
+    {% endif %}
+  {% endunless %}
 </div>
 
 {% schema %}
 {
   "name": "My Bookings",
   "settings": [],
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ],
   "presets": [
     {
       "name": "My Bookings"

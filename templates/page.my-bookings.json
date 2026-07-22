@@ -11,10 +11,6 @@
   "sections": {
     "main": {
       "type": "main-my-bookings",
-      "settings": {}
-    },
-    "17847224120f66c788": {
-      "type": "apps",
       "blocks": {
         "forms_inline_dmnbLq": {
           "type": "shopify://apps/forms/blocks/inline/8744a304-fcb1-4347-b211-bb6b4759a76a",
@@ -28,7 +24,7 @@
             "text_alignment": "center",
             "form_alignment": "center",
             "padding_top": 0,
-            "padding_bottom": 24,
+            "padding_bottom": 0,
             "padding_right": 0,
             "padding_left": 0
           }
@@ -37,13 +33,10 @@
       "block_order": [
         "forms_inline_dmnbLq"
       ],
-      "settings": {
-        "include_margins": true
-      }
+      "settings": {}
     }
   },
   "order": [
-    "main",
-    "17847224120f66c788"
+    "main"
   ]
 }

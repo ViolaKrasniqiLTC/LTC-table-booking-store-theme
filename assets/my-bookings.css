@@ -1,6 +1,6 @@
 .my-bookings {
   margin: 0 auto;
-  max-width: 96rem;
+  max-width: 128rem;
   padding: 2rem 1.5rem 4rem;
 }
 
@@ -54,7 +54,9 @@
   font-size: 1.4rem;
   font-weight: 400;
   cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
   white-space: nowrap;
 }
 
@@ -92,10 +94,48 @@
   outline-offset: 0.2rem;
 }
 
+.my-bookings__layout {
+  display: grid;
+  gap: 1.6rem;
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+.my-bookings__layout--with-form {
+  grid-template-columns: minmax(0, 1fr) minmax(26rem, 34rem);
+}
+
+.my-bookings__layout--narrow {
+  max-width: 85rem;
+  margin-inline: auto;
+}
+
 .my-bookings__list {
   display: grid;
   gap: 1.6rem;
   grid-template-columns: 1fr;
+  min-width: 0;
+}
+
+.my-bookings__form {
+  position: sticky;
+  top: 2rem;
+  min-width: 0;
+  padding: 1.6rem;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.1);
+  border-radius: 1.2rem;
+  background: rgb(var(--color-background));
+  box-shadow: 0 0.1rem 0.3rem rgba(var(--color-shadow), 0.04);
+}
+
+.my-bookings__form--standalone {
+  margin-top: 2rem;
+  position: static;
+}
+
+.my-bookings__form--hidden,
+.my-bookings__form[hidden] {
+  display: none;
 }
 
 .my-bookings__card {
@@ -118,8 +158,9 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 1.2rem;
+  min-width: 0;
   height: 100%;
-  padding: 1.4rem 1.8rem;
+  padding: 1.4rem 2.4rem;
 }
 
 .my-bookings__card-top {
@@ -128,14 +169,77 @@
   justify-content: space-between;
   gap: 1rem;
   flex-shrink: 0;
+  min-width: 0;
   padding-top: 0.8rem;
+}
+
+.my-bookings__card-id-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  flex: 1;
 }
 
 .my-bookings__card-id {
   margin: 0;
+  min-width: 0;
   font-size: 1.5rem;
   font-weight: 600;
+  color: rgba(var(--color-foreground), 0.55);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.my-bookings__card-id-value {
+  display: inline;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.4rem;
+  background: rgba(var(--color-foreground), 0.08);
   color: rgb(var(--color-foreground));
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  user-select: all;
+}
+
+.my-bookings__copy-id {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  padding: 0;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.15);
+  border-radius: 0.6rem;
+  background: rgb(var(--color-background));
+  color: rgba(var(--color-foreground), 0.65);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.my-bookings__copy-id:hover {
+  color: rgb(var(--color-foreground));
+  border-color: rgba(var(--color-foreground), 0.35);
+}
+
+.my-bookings__copy-id:focus-visible {
+  outline: 0.2rem solid rgba(var(--color-foreground), 0.4);
+  outline-offset: 0.2rem;
+}
+
+.my-bookings__copy-id.is-copied {
+  color: rgb(var(--color-foreground));
+  border-color: rgba(var(--color-foreground), 0.35);
+  background: rgba(var(--color-foreground), 0.06);
+}
+
+.my-bookings__copy-id svg {
+  display: block;
 }
 
 .my-bookings__card-body {
@@ -163,10 +267,13 @@
 
 .my-bookings__meta dd {
   margin: 0;
+  min-width: 0;
   font-size: 1.5rem;
   font-weight: 500;
   color: rgb(var(--color-foreground));
   text-align: right;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .my-bookings__status {
@@ -179,18 +286,19 @@
 }
 
 .my-bookings__status--booked {
-  background: rgba(var(--color-foreground), 0.08);
-  color: rgba(var(--color-foreground), 0.75);
+  background: #dbeafe;
+  color: #1e40af;
 }
 
-.my-bookings__status--cancelled {
-  background: rgba(var(--color-foreground), 0.08);
-  color: rgba(var(--color-foreground), 0.55);
+.my-bookings__status--cancelled,
+.my-bookings__status--canceled {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
 .my-bookings__status--completed {
-  background: rgba(var(--color-foreground), 0.06);
-  color: rgba(var(--color-foreground), 0.55);
+  background: #dcfce7;
+  color: #166534;
 }
 
 .my-bookings__card-media {
@@ -232,6 +340,17 @@
 
 .my-bookings__empty-tab {
   margin-top: 0;
+}
+
+@media screen and (max-width: 989px) {
+  .my-bookings__layout--with-form {
+    grid-template-columns: 1fr;
+  }
+
+  .my-bookings__form {
+    position: static;
+    order: -1;
+  }
 }
 
 @media screen and (max-width: 749px) {
