@@ -37,13 +37,6 @@
         "booking_calendar_dbybWF": {
           "type": "booking_calendar",
           "settings": {}
-        },
-        "buy_buttons": {
-          "type": "buy_buttons",
-          "settings": {
-            "show_dynamic_checkout": true,
-            "show_gift_card_recipient": true
-          }
         }
       },
       "block_order": [
@@ -51,8 +44,7 @@
         "title",
         "price",
         "variant_picker",
-        "booking_calendar_dbybWF",
-        "buy_buttons"
+        "booking_calendar_dbybWF"
       ],
       "settings": {
         "enable_sticky_info": true,
