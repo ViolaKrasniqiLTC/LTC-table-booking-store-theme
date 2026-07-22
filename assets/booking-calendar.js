@@ -392,6 +392,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+
     flatpickr(input, {
 
         inline: true,
@@ -506,6 +507,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             selectedList.innerHTML = "";
+
 
 
 
