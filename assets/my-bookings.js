@@ -38,15 +38,36 @@
       .toLowerCase();
   }
 
-  function getCancelledIds() {
-    return getCards()
-      .filter(function (card) {
-        return card.dataset.category === 'cancelled';
-      })
-      .map(function (card) {
-        return normalizeBookingId(card.dataset.bookingId);
-      })
-      .filter(Boolean);
+  function uniqueIds(ids) {
+    const seen = {};
+    return (ids || []).reduce(function (result, id) {
+      const normalized = normalizeBookingId(id);
+      if (!normalized || seen[normalized]) return result;
+      seen[normalized] = true;
+      result.push(normalized);
+      return result;
+    }, []);
+  }
+
+  function getIdsByCategory(category) {
+    return uniqueIds(
+      getCards()
+        .filter(function (card) {
+          return card.dataset.category === category;
+        })
+        .map(function (card) {
+          return card.dataset.bookingId;
+        })
+    );
+  }
+
+  function getBlockedIds(kind) {
+    const fromWindow =
+      kind === 'cancelled'
+        ? window.bookingCancelGuard && window.bookingCancelGuard.cancelledIds
+        : window.bookingCancelGuard && window.bookingCancelGuard.completedIds;
+    const fromCards = getIdsByCategory(kind === 'cancelled' ? 'cancelled' : 'past');
+    return uniqueIds([].concat(fromWindow || [], fromCards || []));
   }
 
   function showCancelError(message) {
@@ -80,48 +101,106 @@
     return hosts;
   }
 
-  function findBookingIdInput(scope) {
-    if (!scope) return null;
-
-    const inputs = Array.from(scope.querySelectorAll('input, textarea'));
-    return (
-      inputs.find(function (input) {
-        const haystack = [
-          input.name,
-          input.id,
-          input.getAttribute('aria-label'),
-          input.placeholder,
-          input.getAttribute('autocomplete'),
-        ]
-          .join(' ')
-          .toLowerCase();
-
-        return /booking/.test(haystack) && /id/.test(haystack);
-      }) ||
-      inputs.find(function (input) {
-        const haystack = [input.name, input.id, input.placeholder, input.getAttribute('aria-label')]
-          .join(' ')
-          .toLowerCase();
-        return /booking/.test(haystack);
-      }) ||
-      null
+  function getScopes(container) {
+    const hosts = collectShadowHosts(container);
+    return [container].concat(
+      hosts
+        .map(function (host) {
+          return host.shadowRoot;
+        })
+        .filter(Boolean)
     );
   }
 
-  function getBookingIdFromScope(scope) {
-    const input = findBookingIdInput(scope);
-    return input ? input.value : '';
+  function getInputValues(scope) {
+    if (!scope || !scope.querySelectorAll) return [];
+    return Array.from(scope.querySelectorAll('input, textarea'))
+      .map(function (input) {
+        return input.value;
+      })
+      .filter(Boolean);
   }
 
-  function shouldBlockCancellation(bookingId) {
-    const normalized = normalizeBookingId(bookingId);
-    if (!normalized) return false;
-    return getCancelledIds().indexOf(normalized) !== -1;
+  function getCandidateBookingIds(scope, event) {
+    const values = [];
+
+    getScopes(scope || form).forEach(function (currentScope) {
+      getInputValues(currentScope).forEach(function (value) {
+        values.push(value);
+      });
+    });
+
+    if (event && typeof event.composedPath === 'function') {
+      event.composedPath().forEach(function (node) {
+        if (!node || node.nodeType !== 1) return;
+
+        if ((node.tagName === 'INPUT' || node.tagName === 'TEXTAREA') && node.value) {
+          values.push(node.value);
+        }
+
+        if (node.querySelectorAll && (node.tagName === 'FORM' || node.shadowRoot)) {
+          const root = node.shadowRoot || node;
+          getInputValues(root).forEach(function (value) {
+            values.push(value);
+          });
+        }
+      });
+    }
+
+    return uniqueIds(values);
   }
 
-  function blockIfCancelled(event, scope) {
-    const bookingId = getBookingIdFromScope(scope);
-    if (!shouldBlockCancellation(bookingId)) {
+  function getCancellationBlockMessageFromValues(values) {
+    const cancelledIds = getBlockedIds('cancelled');
+    const completedIds = getBlockedIds('completed');
+
+    for (let i = 0; i < values.length; i += 1) {
+      const normalized = values[i];
+      if (cancelledIds.indexOf(normalized) !== -1) {
+        return 'This booking is already cancelled.';
+      }
+      if (completedIds.indexOf(normalized) !== -1) {
+        return 'This booking is already completed';
+      }
+    }
+
+    return null;
+  }
+
+  function getSubmitterFromEvent(event) {
+    const path = typeof event.composedPath === 'function' ? event.composedPath() : [];
+    for (let i = 0; i < path.length; i += 1) {
+      const node = path[i];
+      if (!node || node.nodeType !== 1) continue;
+      const tag = node.tagName;
+      if (tag === 'BUTTON') return node;
+      if (tag === 'INPUT' && node.type === 'submit') return node;
+      if (node.getAttribute && node.getAttribute('role') === 'button') return node;
+    }
+
+    if (event.target && event.target.closest) {
+      return event.target.closest('button, input[type="submit"], [role="button"]');
+    }
+
+    return null;
+  }
+
+  function eventIsInsideForm(event) {
+    if (!form) return false;
+
+    const path = typeof event.composedPath === 'function' ? event.composedPath() : [];
+    if (path.length) {
+      return path.indexOf(form) !== -1;
+    }
+
+    const target = event.target;
+    if (!target) return false;
+    return form === target || (form.contains && form.contains(target));
+  }
+
+  function blockIfNotCancellable(event) {
+    const message = getCancellationBlockMessageFromValues(getCandidateBookingIds(form, event));
+    if (!message) {
       hideCancelError();
       return false;
     }
@@ -132,55 +211,40 @@
       event.stopImmediatePropagation();
     }
 
-    showCancelError('This booking is already cancelled.');
+    showCancelError(message);
     return true;
+  }
+
+  function onPotentialSubmit(event) {
+    if (!form || form.hidden || form.classList.contains('my-bookings__form--hidden')) return;
+    if (!eventIsInsideForm(event)) return;
+
+    if (event.type === 'click' && !getSubmitterFromEvent(event)) return;
+    if (event.type === 'keydown' && event.key !== 'Enter') return;
+
+    blockIfNotCancellable(event);
   }
 
   function attachCancelGuard() {
     if (!form) return;
 
-    const hosts = collectShadowHosts(form);
-    const scopes = [form].concat(
-      hosts
-        .map(function (host) {
-          return host.shadowRoot;
-        })
-        .filter(Boolean)
-    );
+    if (form.dataset.cancelGuardRoot !== 'true') {
+      form.dataset.cancelGuardRoot = 'true';
+      document.addEventListener('submit', onPotentialSubmit, true);
+      document.addEventListener('click', onPotentialSubmit, true);
+      document.addEventListener('keydown', onPotentialSubmit, true);
+    }
+
+    const scopes = getScopes(form);
 
     scopes.forEach(function (scope) {
-      const forms = Array.from(scope.querySelectorAll('form'));
-      const targets = forms.length ? forms : [scope];
+      if (!scope.querySelectorAll) return;
 
-      targets.forEach(function (target) {
-        if (!target || target.dataset.cancelGuardAttached === 'true') return;
-        target.dataset.cancelGuardAttached = 'true';
-
-        target.addEventListener(
-          'submit',
-          function (event) {
-            blockIfCancelled(event, scope);
-          },
-          true
-        );
-
-        target.addEventListener(
-          'click',
-          function (event) {
-            const submitter = event.target.closest('button, input[type="submit"]');
-            if (!submitter) return;
-            if (submitter.tagName === 'BUTTON' && submitter.type && submitter.type !== 'submit') return;
-            blockIfCancelled(event, scope);
-          },
-          true
-        );
-
-        const bookingInput = findBookingIdInput(scope);
-        if (bookingInput && bookingInput.dataset.cancelGuardInput !== 'true') {
-          bookingInput.dataset.cancelGuardInput = 'true';
-          bookingInput.addEventListener('input', hideCancelError);
-          bookingInput.addEventListener('change', hideCancelError);
-        }
+      Array.from(scope.querySelectorAll('input, textarea')).forEach(function (bookingInput) {
+        if (bookingInput.dataset.cancelGuardInput === 'true') return;
+        bookingInput.dataset.cancelGuardInput = 'true';
+        bookingInput.addEventListener('input', hideCancelError);
+        bookingInput.addEventListener('change', hideCancelError);
       });
     });
   }

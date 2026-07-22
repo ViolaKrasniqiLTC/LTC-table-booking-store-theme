@@ -18,16 +18,33 @@
       {% assign upcoming_count = 0 %}
       {% assign past_count = 0 %}
       {% assign cancelled_count = 0 %}
+      {% assign cancelled_ids = '' %}
+      {% assign completed_ids = '' %}
 
       {% for booking in shop.metaobjects.booking.values %}
         {% include 'booking-belongs-to-customer', booking: booking, customer: customer %}
         {% if booking_belongs %}
           {% assign has_bookings = true %}
           {% assign status = booking.status.value | default: 'Booked' | downcase %}
+          {% assign guard_order = booking.order_reference.value | default: booking.order.value %}
+          {% assign guard_booking_id = booking.booking_id.value | default: guard_order.name | default: '' %}
+          {% assign guard_id = guard_booking_id | remove: 'Booking' | strip | replace: '#', '' | strip | downcase %}
           {% if status == 'cancelled' or status == 'canceled' %}
             {% assign cancelled_count = cancelled_count | plus: 1 %}
+            {% if guard_id != blank %}
+              {% if cancelled_ids != blank %}
+                {% assign cancelled_ids = cancelled_ids | append: '|' %}
+              {% endif %}
+              {% assign cancelled_ids = cancelled_ids | append: guard_id %}
+            {% endif %}
           {% elsif status == 'completed' %}
             {% assign past_count = past_count | plus: 1 %}
+            {% if guard_id != blank %}
+              {% if completed_ids != blank %}
+                {% assign completed_ids = completed_ids | append: '|' %}
+              {% endif %}
+              {% assign completed_ids = completed_ids | append: guard_id %}
+            {% endif %}
           {% else %}
             {% assign upcoming_count = upcoming_count | plus: 1 %}
           {% endif %}
@@ -223,6 +240,13 @@
           <p>You do not have any bookings yet.</p>
         </div>
       {% endunless %}
+
+      <script>
+        window.bookingCancelGuard = {
+          cancelledIds: {% if cancelled_ids != blank %}{{ cancelled_ids | split: '|' | json }}{% else %}[]{% endif %},
+          completedIds: {% if completed_ids != blank %}{{ completed_ids | split: '|' | json }}{% else %}[]{% endif %}
+        };
+      </script>
 
     {% endpaginate %}
   {% endif %}
