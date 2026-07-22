@@ -25,11 +25,9 @@
     </div>
 
 
-    {% comment %}
-      Hidden fields are read by product-form.js to add one cart line per date.
-      They intentionally have no name="properties[...]" so they are not submitted
-      as a single line item.
-    {% endcomment %}
+
+
+
     <input
       type="hidden"
       id="booking-table"
@@ -54,6 +52,14 @@
   </div>
 
 </div>
+
+<button 
+  type="button" 
+  id="book-now"
+  class="button button--primary"
+>
+  Book Now
+</button>
 
 
 

@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const dateInput2 = document.querySelector("#booking-date-2");
     const dateInput3 = document.querySelector("#booking-date-3");
 
+    const bookNowButton = document.querySelector("#book-now");
+
 
     const popup = document.querySelector("#booking-popup");
     const popupTitle = document.querySelector("#popup-title");
@@ -102,6 +104,128 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     moveBookingFieldsIntoForm();
+
+    if (bookNowButton) {
+
+    bookNowButton.addEventListener("click", async () => {
+
+
+        const dates = [
+            dateInput1?.value,
+            dateInput2?.value,
+            dateInput3?.value
+        ].filter(Boolean);
+
+
+
+        if (dates.length === 0) {
+
+            showPopup(
+                "No dates selected",
+                "Please select at least one booking date."
+            );
+
+            return;
+
+        }
+
+
+
+        const variantId =
+            document.querySelector(
+                '[name="id"]'
+            )?.value;
+
+
+
+        if (!variantId) {
+
+            console.error(
+                "Variant ID missing"
+            );
+
+            return;
+
+        }
+
+
+
+        const items = dates.map(date => ({
+
+            id: Number(variantId),
+
+            quantity: 1,
+
+            properties: {
+
+                Table: tableName,
+
+                "Booking Date": date
+
+            }
+
+        }));
+
+
+
+        try {
+
+
+            const response =
+                await fetch(
+                    "/cart/add.js",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                            "application/json"
+
+                        },
+
+                        body: JSON.stringify({
+
+                            items
+
+                        })
+
+                    }
+                );
+
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Cart add failed"
+                );
+
+            }
+
+
+
+            window.location.href =
+                "/checkout";
+
+
+        } catch(error) {
+
+            console.error(error);
+
+
+            showPopup(
+                "Error",
+                "Could not create booking."
+            );
+
+        }
+
+
+    });
+
+}
 
 
 
