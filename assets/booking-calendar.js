@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     const input = document.querySelector("#booking-date");
-
     const selectedList = document.querySelector("#selected-dates");
 
     const tableInput = document.querySelector("#booking-table");
@@ -12,11 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     const popup = document.querySelector("#booking-popup");
-
     const popupTitle = document.querySelector("#popup-title");
-
     const popupMessage = document.querySelector("#popup-message");
-
     const closePopup = document.querySelector("#close-popup");
 
 
@@ -41,11 +37,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!popup) return;
 
         popupTitle.textContent = title;
-
         popupMessage.textContent = message;
 
         popup.style.display = "flex";
-
     }
 
 
@@ -118,7 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
         "submit",
         (event) => {
 
-
             const form =
                 event.target.closest(
                     'form[data-type="add-to-cart-form"]'
@@ -142,13 +135,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!hasDates) {
 
-
                 event.preventDefault();
-
                 event.stopPropagation();
-
                 event.stopImmediatePropagation();
-
 
 
                 showPopup(
@@ -158,34 +147,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
             }
 
-
         },
         true
     );
 
 
+
+
+
     // Buy Now / dynamic checkout can only add a single line item.
     // Booking dates must be added as separate lines via product-form.js.
+
     document.addEventListener(
         "click",
         (event) => {
-            const buyNowButton = event.target.closest(
-                ".shopify-payment-button__button"
-            );
+
+            const buyNowButton =
+                event.target.closest(
+                    ".shopify-payment-button__button"
+                );
+
 
             if (!buyNowButton) return;
+
 
             event.preventDefault();
             event.stopPropagation();
             event.stopImmediatePropagation();
 
+
             showPopup(
                 "Use Add to cart",
                 "Please use Add to cart so each booking date is added as its own line item."
             );
+
         },
         true
     );
+
 
 
     if (!input) return;
@@ -196,8 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const today = new Date();
 
-    today.setHours(0,0,0,0);
-
+    today.setHours(0, 0, 0, 0);
 
 
 
@@ -213,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
-    nextMonday.setHours(0,0,0,0);
+    nextMonday.setHours(0, 0, 0, 0);
 
 
 
@@ -227,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
-    nextFriday.setHours(23,59,59,999);
+    nextFriday.setHours(23, 59, 59, 999);
 
 
 
@@ -236,22 +234,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function formatDate(date) {
 
-
         const year =
             date.getFullYear();
 
 
-
         const month =
             String(date.getMonth() + 1)
-            .padStart(2,"0");
-
+                .padStart(2, "0");
 
 
         const day =
             String(date.getDate())
-            .padStart(2,"0");
-
+                .padStart(2, "0");
 
 
         return `${year}-${month}-${day}`;
@@ -274,22 +268,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
-
     flatpickr(input, {
-
 
         inline: true,
 
-
         mode: "multiple",
-
 
 
         disable: [
 
             (date) => {
-
 
                 const formattedDate =
                     formatDate(date);
@@ -302,21 +290,17 @@ document.addEventListener("DOMContentLoaded", () => {
                         formattedDate
                     )
 
-
                     ||
 
                     formattedDate < minDate
-
 
                     ||
 
                     formattedDate > maxDate
 
-
                     ||
 
                     date.getDay() === 0
-
 
                     ||
 
@@ -331,9 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
         onChange(selectedDates) {
-
 
 
             const totalDays =
@@ -344,7 +326,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             if (totalDays > MAX_BOOKING_DAYS) {
-
 
 
                 selectedDates.pop();
@@ -376,16 +357,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     remaining === 0
 
-                    ?
+                        ? "You already reached your maximum of 3 booking days."
 
-                    "You already reached your maximum of 3 booking days."
-
-                    :
-
-                    `You already have ${alreadyBookedDays} booked day(s). You can only select ${remaining} more day(s).`
+                        : `You already have ${alreadyBookedDays} booked day(s). You can only select ${remaining} more day(s).`
 
                 );
-
 
 
                 return;
@@ -398,9 +374,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             const formattedDates =
-                selectedDates.map(
-                    formatDate
-                );
+                selectedDates.map(formatDate);
 
 
 
@@ -413,21 +387,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
             formattedDates.forEach(date => {
-
 
                 const li =
                     document.createElement("li");
 
 
-
                 li.textContent = date;
 
 
-
                 selectedList.appendChild(li);
-
 
             });
 
@@ -436,20 +405,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-            // product-form.js reads these and adds one cart line per date
+            // Store each date separately as line item properties.
+            // product-form.js reads these and adds one cart line per date.
+
             if (dateInput1)
                 dateInput1.value = formattedDates[0] || "";
 
+
             if (dateInput2)
                 dateInput2.value = formattedDates[1] || "";
+
 
             if (dateInput3)
                 dateInput3.value = formattedDates[2] || "";
 
         }
 
-
     });
-
 
 });
