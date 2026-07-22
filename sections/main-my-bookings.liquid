@@ -76,7 +76,7 @@
         </div>
       {% endif %}
 
-      <div class="my-bookings__layout{% if section.blocks.size > 0 %} my-bookings__layout--with-form{% endif %}">
+      <div class="my-bookings__layout{% if upcoming_count > 0 and section.blocks.size > 0 %} my-bookings__layout--with-form{% else %} my-bookings__layout--narrow{% endif %}">
         <div id="my-bookings-list" class="my-bookings__list">
           {% for booking in shop.metaobjects.booking.values %}
             {% include 'booking-belongs-to-customer', booking: booking, customer: customer %}
@@ -95,11 +95,13 @@
               {% elsif status_class == 'completed' %}
                 {% assign category = 'past' %}
               {% endif %}
+              {% assign copy_booking_id = booking_id | remove: 'Booking' | strip | replace: '#', '' | prepend: '#' %}
 
               <article
                 class="my-bookings__card{% unless category == 'upcoming' %} my-bookings__card--hidden{% endunless %}"
                 data-category="{{ category }}"
                 data-order-date="{{ booking.date.value | date: '%s' }}"
+                data-booking-id="{{ copy_booking_id | escape }}"
               >
                 <div class="my-bookings__card-media">
                   {% if table_image %}
@@ -120,7 +122,6 @@
 
                 <div class="my-bookings__card-content">
                   <div class="my-bookings__card-top">
-                    {% assign copy_booking_id = booking_id | remove: 'Booking' | strip | replace: '#', '' | prepend: '#' %}
                     <div class="my-bookings__card-id-row">
                       <p class="my-bookings__card-id">
                         Booking
@@ -195,8 +196,9 @@
           {% endfor %}
         </div>
 
-        {% if section.blocks.size > 0 %}
+        {% if upcoming_count > 0 and section.blocks.size > 0 %}
           <aside class="my-bookings__form">
+            <p class="my-bookings__cancel-error" data-cancel-error hidden role="alert"></p>
             {% for block in section.blocks %}
               {% render block %}
             {% endfor %}
@@ -206,6 +208,16 @@
 
       <p class="my-bookings__empty-tab" hidden>No bookings in this category.</p>
 
+      <nav class="my-bookings__pagination" hidden aria-label="Bookings pagination">
+        <button type="button" class="my-bookings__pagination-btn" data-pagination="prev" aria-label="Previous page">
+          Previous
+        </button>
+        <p class="my-bookings__pagination-status" aria-live="polite"></p>
+        <button type="button" class="my-bookings__pagination-btn" data-pagination="next" aria-label="Next page">
+          Next
+        </button>
+      </nav>
+
       {% unless has_bookings %}
         <div class="my-bookings__empty">
           <p>You do not have any bookings yet.</p>
@@ -214,16 +226,6 @@
 
     {% endpaginate %}
   {% endif %}
-
-  {% unless customer %}
-    {% if section.blocks.size > 0 %}
-      <aside class="my-bookings__form my-bookings__form--standalone">
-        {% for block in section.blocks %}
-          {% render block %}
-        {% endfor %}
-      </aside>
-    {% endif %}
-  {% endunless %}
 </div>
 
 {% schema %}

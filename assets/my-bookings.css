@@ -138,6 +138,22 @@
   display: none;
 }
 
+.my-bookings__cancel-error {
+  margin: 0 0 1.2rem;
+  padding: 1rem 1.2rem;
+  border: 0.1rem solid #fecaca;
+  border-radius: 0.8rem;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 1.3rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.my-bookings__cancel-error[hidden] {
+  display: none;
+}
+
 .my-bookings__card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -340,6 +356,55 @@
 
 .my-bookings__empty-tab {
   margin-top: 0;
+}
+
+.my-bookings__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
+  margin-top: 2rem;
+}
+
+.my-bookings__pagination[hidden] {
+  display: none;
+}
+
+.my-bookings__pagination-btn {
+  min-width: 9rem;
+  padding: 0.8rem 1.4rem;
+  border: 0.1rem solid rgba(var(--color-foreground), 0.15);
+  border-radius: 0.6rem;
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  font: inherit;
+  font-size: 1.3rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.my-bookings__pagination-btn:hover:not(:disabled) {
+  border-color: rgba(var(--color-foreground), 0.35);
+  background: rgba(var(--color-foreground), 0.04);
+}
+
+.my-bookings__pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.my-bookings__pagination-btn:focus-visible {
+  outline: 0.2rem solid rgba(var(--color-foreground), 0.4);
+  outline-offset: 0.2rem;
+}
+
+.my-bookings__pagination-status {
+  margin: 0;
+  min-width: 9rem;
+  text-align: center;
+  font-size: 1.3rem;
+  color: rgba(var(--color-foreground), 0.7);
 }
 
 @media screen and (max-width: 989px) {
