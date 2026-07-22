@@ -82,10 +82,10 @@
           {% if booking_belongs %}
             {% assign order = matched_order %}
             {% assign booking_customer = booking.customer.value %}
-            {% assign booking_order = booking.order_reference.value | default: booking.order.value %}
             {% assign status = booking.status.value | default: 'Booked' %}
             {% assign status_class = status | strip | downcase %}
             {% assign booking_id = booking.booking_id.value | default: order.name %}
+            {% assign detail_id = booking_id | handleize %}
             {% assign table_product = booking.table.value %}
             {% assign table_image = table_product.featured_media | default: table_product.featured_image %}
             {% assign category = 'upcoming' %}
@@ -151,24 +151,22 @@
                     </dd>
                   </div>
                   <div class="my-bookings__meta">
-                    <dt>Email</dt>
-                    <dd>{{ booking.customer_email.value | default: booking_customer.email | default: customer.email }}</dd>
-                  </div>
-                  <div class="my-bookings__meta">
-                    <dt>Order reference</dt>
-                    <dd>{{ booking_order.name | default: order.name | default: '—' }}</dd>
-                  </div>
-                  <div class="my-bookings__meta">
-                    <dt>Order date</dt>
+                    <dt>Total</dt>
                     <dd>
                       {% if order %}
-                        {{ order.created_at | date: '%d %b %Y' }}
+                        {{ order.total_net_amount | money_with_currency }}
                       {% else %}
                         —
                       {% endif %}
                     </dd>
                   </div>
                 </dl>
+
+                <div class="my-bookings__card-action">
+                  <a href="#booking-{{ detail_id }}" class="my-bookings__button">
+                    View details
+                  </a>
+                </div>
               </div>
             </article>
           {% endif %}
@@ -182,6 +180,137 @@
           <p>You do not have any bookings yet.</p>
         </div>
       {% endunless %}
+
+      {% for booking in shop.metaobjects.booking.values %}
+        {% include 'booking-belongs-to-customer', booking: booking, customer: customer %}
+        {% if booking_belongs %}
+          {% assign order = matched_order %}
+          {% assign booking_id = booking.booking_id.value | default: order.name %}
+          {% assign detail_id = booking_id | handleize %}
+          {% assign detail_status = booking.status.value | default: 'Booked' | strip | downcase %}
+          {% assign detail_category = 'upcoming' %}
+          {% if detail_status == 'cancelled' or detail_status == 'canceled' %}
+            {% assign detail_category = 'cancelled' %}
+          {% elsif detail_status == 'completed' %}
+            {% assign detail_category = 'past' %}
+          {% endif %}
+
+          {% assign show_cancel_button = false %}
+          {% if detail_category == 'upcoming' %}
+            {% unless order != blank and order.cancelled %}
+              {% assign show_cancel_button = true %}
+            {% endunless %}
+          {% endif %}
+
+          <div id="booking-{{ detail_id }}" class="booking-details">
+            <a href="#my-bookings-list" class="booking-details__back">← Back to all bookings</a>
+            <div class="booking-details__header">
+              <h2 class="booking-details__title">
+                {%- if booking_id contains 'Booking' or booking_id contains 'BK' -%}
+                  {{ booking_id }}
+                {%- else -%}
+                  Booking #{{ booking_id }}
+                {%- endif -%}
+              </h2>
+              <span class="my-bookings__status my-bookings__status--{{ detail_status }}">
+                {{ booking.status.value | default: 'Booked' }}
+              </span>
+            </div>
+            {% render 'booking-details',
+              booking: booking,
+              order: order,
+              customer: customer,
+              detail_id: detail_id,
+              show_cancel: show_cancel_button
+            %}
+          </div>
+        {% endif %}
+      {% endfor %}
+
+      {% if has_bookings %}
+        {% assign cancel_return_url = request.path | append: '?cancel_submitted=1' %}
+
+        {% form 'contact', id: 'BookingCancelForm', return_to: cancel_return_url, class: 'booking-cancel__form' %}
+          {% if form.posted_successfully? and request.params.cancel_submitted == '1' %}
+            <div class="booking-cancel__success booking-cancel__success--global" role="status">
+              <p class="booking-cancel__success-title">Cancellation request submitted</p>
+              <p class="booking-cancel__success-text">
+                Your request has been sent to our team. We will review it and get back to you by email.
+              </p>
+            </div>
+          {% endif %}
+
+          <dialog class="booking-cancel__dialog" id="booking-cancel-dialog" aria-labelledby="booking-cancel-title">
+            <div class="booking-cancel__dialog-inner">
+              <button type="button" class="booking-cancel__close" data-cancel-close aria-label="Close">
+                &times;
+              </button>
+
+              <h3 class="booking-cancel__title" id="booking-cancel-title">Request cancellation</h3>
+              <p class="booking-cancel__intro">
+                Submit a cancellation request for this booking. Our team will review it and contact you by email.
+              </p>
+
+              <dl class="booking-cancel__summary">
+                <div class="booking-cancel__summary-row">
+                  <dt>Booking</dt>
+                  <dd data-cancel-summary="booking-id"></dd>
+                </div>
+                <div class="booking-cancel__summary-row">
+                  <dt>Table</dt>
+                  <dd data-cancel-summary="table"></dd>
+                </div>
+                <div class="booking-cancel__summary-row">
+                  <dt>Date</dt>
+                  <dd data-cancel-summary="date"></dd>
+                </div>
+              </dl>
+
+              <input type="hidden" name="contact[tags]" value="cancellation-request">
+              <input type="hidden" name="contact[name]" value="" data-cancel-name>
+              <input type="hidden" name="contact[body]" value="" data-cancel-body>
+
+              <div class="booking-cancel__field">
+                <label class="booking-cancel__label" for="BookingCancelForm-email">Email</label>
+                <input
+                  type="email"
+                  id="BookingCancelForm-email"
+                  class="booking-cancel__input"
+                  name="contact[email]"
+                  value=""
+                  data-cancel-email
+                  autocomplete="email"
+                  required
+                >
+              </div>
+
+              <div class="booking-cancel__field">
+                <label class="booking-cancel__label" for="BookingCancelForm-reason">
+                  Reason <span class="booking-cancel__optional">(optional)</span>
+                </label>
+                <textarea
+                  id="BookingCancelForm-reason"
+                  class="booking-cancel__textarea"
+                  rows="4"
+                  placeholder="Tell us why you would like to cancel this booking"
+                  data-cancel-reason
+                ></textarea>
+              </div>
+
+              {% if form.errors %}
+                <p class="booking-cancel__error" role="alert">
+                  Please check your email address and try again.
+                </p>
+              {% endif %}
+
+              <div class="booking-cancel__actions">
+                <button type="button" class="booking-cancel__secondary" data-cancel-close>Cancel</button>
+                <button type="submit" class="booking-cancel__submit">Submit request</button>
+              </div>
+            </div>
+          </dialog>
+        {% endform %}
+      {% endif %}
 
     {% endpaginate %}
   {% endif %}
