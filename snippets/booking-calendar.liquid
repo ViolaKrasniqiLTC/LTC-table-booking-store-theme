@@ -85,7 +85,9 @@
 
 window.bookingData = {
 
-    tableName: "{{ product.title | escape }}",
+    tableName: {{ product.title | json }},
+
+    variantId: {{ product.selected_or_first_available_variant.id | json }},
 
     unavailableDates: [
 
@@ -98,7 +100,7 @@ window.bookingData = {
 
                 {% unless first %},{% endunless %}
 
-                "{{ booking.date.value }}"
+                {{ booking.date.value | json }}
 
                 {% assign first = false %}
 
