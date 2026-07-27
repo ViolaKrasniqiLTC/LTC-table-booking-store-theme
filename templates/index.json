@@ -146,14 +146,14 @@
         "heading_9jfezD": {
           "type": "heading",
           "settings": {
-            "heading": "Next Week's Availability",
+            "heading": "Availability Calendar",
             "heading_size": "h1"
           }
         },
         "text_P97jYj": {
           "type": "text",
           "settings": {
-            "text": "<p>Discover our available time slots for the coming week. Browse our calendar to find the perfect moment that works for your schedule and secure your booking today.</p>"
+            "text": "<p>Browse the calendar to find the perfect moment that works for your schedule and secure your booking today.</p>"
           }
         }
       },
