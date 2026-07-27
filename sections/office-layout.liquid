@@ -3,27 +3,9 @@
   - Floor plan on the left, description on the right
   - Each "table" is a section block that links to a Shopify product
   - Position/size of every table is controlled by sliders in the theme editor
-  - Tables fully booked for next week (Mon–Fri) are greyed out and unclickable
 {% endcomment %}
 
 {{ 'office-layout.css' | asset_url | stylesheet_tag }}
-
-{% assign offset_seconds = 'now' | date: '%u' | minus: 1 | times: 86400 %}
-{% assign next_monday_ts = 'now' | date: '%s' | minus: offset_seconds | plus: 604800 %}
-
-{% paginate shop.metaobjects.booking.values by 250 %}
-  {% capture taken_keys %}
-    {% for booking in shop.metaobjects.booking.values %}
-      {% unless booking.status.value == 'Cancelled' %}
-        {% if booking.table.value.handle != blank %}
-          |{{ booking.table.value.handle }}_{{ booking.date.value | date: '%Y-%m-%d' }}|
-        {% elsif booking.table.value.id != blank %}
-          |id:{{ booking.table.value.id }}_{{ booking.date.value | date: '%Y-%m-%d' }}|
-        {% endif %}
-      {% endunless %}
-    {% endfor %}
-  {% endcapture %}
-{% endpaginate %}
 
 <div
   class="office-floor-plan-wrapper"
@@ -61,29 +43,9 @@
       {% for block in section.blocks %}
         {% if block.type == 'table' %}
           {% assign product = block.settings.product %}
-          {% assign table_handle = product.handle | default: '' %}
-          {% assign week_fully_booked = false %}
-
-          {% if product and table_handle != blank %}
-            {% assign week_fully_booked = true %}
-            {% for i in (0..4) %}
-              {% assign day_date = i | times: 86400 | plus: next_monday_ts | date: '%Y-%m-%d' %}
-              {% assign key = '|' | append: table_handle | append: '_' | append: day_date | append: '|' %}
-              {% assign key_by_id = '|id:' | append: product.id | append: '_' | append: day_date | append: '|' %}
-              {% unless taken_keys contains key or taken_keys contains key_by_id %}
-                {% assign week_fully_booked = false %}
-                {% break %}
-              {% endunless %}
-            {% endfor %}
-          {% endif %}
-
-          {% assign table_clickable = false %}
-          {% if product and product.available and week_fully_booked == false %}
-            {% assign table_clickable = true %}
-          {% endif %}
 
           <a
-            {% if table_clickable %}
+            {% if product and product.available %}
               href="{{ product.url }}"
             {% else %}
               href="#"
@@ -92,7 +54,7 @@
             {% endif %}
             class="
               office-floor-plan__table
-              {% unless table_clickable %}
+              {% unless product and product.available %}
                 office-floor-plan__table--unavailable
               {% endunless %}
             "
@@ -102,7 +64,6 @@
               --t-width: {{ block.settings.width }}%;
               --t-height: {{ block.settings.height }}%;
             "
-            {{ block.shopify_attributes }}
           >
             <span class="office-floor-plan__chair office-floor-plan__chair--{{ block.settings.chair_side }}" aria-hidden="true"></span>
           
