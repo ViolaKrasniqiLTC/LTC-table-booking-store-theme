@@ -136,6 +136,32 @@
   color: #e05d5d;
 }
 
+.table-availability__avatar {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  vertical-align: middle;
+  object-fit: cover;
+}
+
+.table-availability__avatar--legend {
+  width: 20px;
+  height: 20px;
+  margin-right: 0;
+  border: 1.5px solid #eaeaea;
+}
+
+.table-availability__legend-avatars {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.table-availability__legend-avatars .table-availability__avatar--legend + .table-availability__avatar--legend {
+  margin-left: -8px;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .table-availability__cell:not(.table-availability__cell--draft):hover {
     transform: scale(1.12);
@@ -172,7 +198,9 @@
 }
 
 .table-availability__legend-item--taken {
-  color: #e05d5d;
+  display: inline-flex;
+  align-items: center;
+  color: #555;
 }
 
 .table-availability__table-link {
@@ -256,6 +284,11 @@
     font-size: 15px;
   }
 
+  .table-availability__avatar {
+    width: 24px;
+    height: 24px;
+  }
+
   .table-availability__day-name--long {
     display: none;
   }
@@ -323,6 +356,11 @@
     padding: 8px 6px;
     font-size: 14px;
     min-width: 0;
+  }
+
+  .table-availability__avatar {
+    width: 22px;
+    height: 22px;
   }
 
   .table-availability__legend {

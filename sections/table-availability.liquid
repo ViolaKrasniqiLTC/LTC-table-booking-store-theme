@@ -18,10 +18,14 @@
   {% capture taken_keys %}
     {% for booking in shop.metaobjects.booking.values %}
       {% unless booking.status.value == 'Cancelled' %}
+        {% assign booking_initials = booking.initials.value | strip | upcase %}
+        {% if booking_initials == blank %}
+          {% assign booking_initials = '?' %}
+        {% endif %}
         {% if booking.table.value.handle != blank %}
-          |{{ booking.table.value.handle }}_{{ booking.date.value | date: '%Y-%m-%d' }}|
+          |{{ booking.table.value.handle }}_{{ booking.date.value | date: '%Y-%m-%d' }}:{{ booking_initials }}|
         {% elsif booking.table.value.id != blank %}
-          |id:{{ booking.table.value.id }}_{{ booking.date.value | date: '%Y-%m-%d' }}|
+          |id:{{ booking.table.value.id }}_{{ booking.date.value | date: '%Y-%m-%d' }}:{{ booking_initials }}|
         {% endif %}
       {% endunless %}
     {% endfor %}
@@ -87,7 +91,35 @@
 
   <div class="table-availability__legend">
     <span class="table-availability__legend-item table-availability__legend-item--available">✓ Available</span>
-    <span class="table-availability__legend-item table-availability__legend-item--taken">✗ Taken</span>
+    <span class="table-availability__legend-item table-availability__legend-item--taken">
+      <span class="table-availability__legend-avatars" aria-hidden="true">
+        <img
+          class="table-availability__avatar table-availability__avatar--legend"
+          src="https://ui-avatars.com/api/?name=XX&size=48&rounded=true&bold=true&background=f8c4c4&color=5a5a5a&length=2"
+          alt=""
+          width="20"
+          height="20"
+          loading="lazy"
+        >
+        <img
+          class="table-availability__avatar table-availability__avatar--legend"
+          src="https://ui-avatars.com/api/?name=XX&size=48&rounded=true&bold=true&background=c5d9f8&color=5a5a5a&length=2"
+          alt=""
+          width="20"
+          height="20"
+          loading="lazy"
+        >
+        <img
+          class="table-availability__avatar table-availability__avatar--legend"
+          src="https://ui-avatars.com/api/?name=XX&size=48&rounded=true&bold=true&background=c5ebd4&color=5a5a5a&length=2"
+          alt=""
+          width="20"
+          height="20"
+          loading="lazy"
+        >
+      </span>
+      Taken
+    </span>
   </div>
 </div>
 

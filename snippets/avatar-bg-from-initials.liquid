@@ -1,0 +1,26 @@
+{% doc %}
+  Outputs a deterministic hex background color (no #) for avatar initials.
+
+  @param {string} initials - One or two letter initials (e.g. AB)
+{% enddoc %}
+{% assign palette = 'f8c4c4,c5d9f8,c5ebd4,fde8b0,ddd0f8,b8ebe6,fdc9b0,f8cce0,c8ebd8,c8d2f8,dce8b8,b8ddd8' | split: ',' %}
+{% assign letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' %}
+{% assign hash = 0 %}
+{% assign clean = initials | default: '?' | upcase | strip %}
+
+{% for char_offset in (0..1) %}
+  {% assign ch = clean | slice: char_offset, 1 %}
+  {% if ch != blank %}
+    {% for li in (0..25) %}
+      {% assign letter = letters | slice: li, 1 %}
+      {% if letter == ch %}
+        {% assign hash = hash | times: 31 | plus: li | plus: 1 %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+{% assign palette_size = palette | size %}
+{% assign index = hash | modulo: palette_size %}
+{{- palette[index] -}}

@@ -2,7 +2,7 @@
   Renders one Mon–Fri table availability matrix for a given week.
 
   @param {number} monday_ts - Unix timestamp for the Monday of the week to show
-  @param {string} taken_keys - Precomputed booking keys like |handle_YYYY-MM-DD|
+  @param {string} taken_keys - Precomputed booking keys like |handle_YYYY-MM-DD:AB|
   @param {boolean} [allow_booking_links] - When true, link available tables to their product pages
   @param {boolean} [include_editor_attrs] - When true, output block.shopify_attributes (use on one panel only)
   @param {object} table_blocks - Section blocks of type "table"
@@ -46,12 +46,12 @@
           {% assign week_fully_booked = true %}
           {% for i in (0..4) %}
             {% assign day_date = i | times: 86400 | plus: monday_ts | date: '%Y-%m-%d' %}
-            {% assign key = '|' | append: table_handle | append: '_' | append: day_date | append: '|' %}
-            {% assign key_by_id = '' %}
+            {% assign key_prefix = '|' | append: table_handle | append: '_' | append: day_date | append: ':' %}
+            {% assign key_by_id_prefix = '' %}
             {% if product and product.id != blank %}
-              {% assign key_by_id = '|id:' | append: product.id | append: '_' | append: day_date | append: '|' %}
+              {% assign key_by_id_prefix = '|id:' | append: product.id | append: '_' | append: day_date | append: ':' %}
             {% endif %}
-            {% unless taken_keys contains key or key_by_id != '' and taken_keys contains key_by_id %}
+            {% unless taken_keys contains key_prefix or key_by_id_prefix != '' and taken_keys contains key_by_id_prefix %}
               {% assign week_fully_booked = false %}
               {% break %}
             {% endunless %}
@@ -77,17 +77,38 @@
             </th>
             {% for i in (0..4) %}
               {% assign day_date = i | times: 86400 | plus: monday_ts | date: '%Y-%m-%d' %}
-              {% assign key = '|' | append: table_handle | append: '_' | append: day_date | append: '|' %}
-              {% assign key_by_id = '' %}
+              {% assign key_prefix = '|' | append: table_handle | append: '_' | append: day_date | append: ':' %}
+              {% assign key_by_id_prefix = '' %}
               {% if product and product.id != blank %}
-                {% assign key_by_id = '|id:' | append: product.id | append: '_' | append: day_date | append: '|' %}
+                {% assign key_by_id_prefix = '|id:' | append: product.id | append: '_' | append: day_date | append: ':' %}
               {% endif %}
               {% assign is_taken = false %}
-              {% if taken_keys contains key or key_by_id != '' and taken_keys contains key_by_id %}
+              {% assign cell_initials = '?' %}
+              {% if taken_keys contains key_prefix %}
                 {% assign is_taken = true %}
+                {% assign cell_initials = taken_keys | split: key_prefix | last | split: '|' | first %}
+              {% elsif key_by_id_prefix != '' and taken_keys contains key_by_id_prefix %}
+                {% assign is_taken = true %}
+                {% assign cell_initials = taken_keys | split: key_by_id_prefix | last | split: '|' | first %}
               {% endif %}
               <td class="table-availability__cell table-availability__cell--{% if is_taken %}taken{% else %}available{% endif %}{% unless table_published %} table-availability__cell--draft{% endunless %}">
-                {% if is_taken %}✗{% else %}✓{% endif %}
+                {% if is_taken %}
+                  {% capture avatar_bg %}
+                    {% render 'avatar-bg-from-initials', initials: cell_initials %}
+                  {% endcapture %}
+                  {% assign avatar_bg = avatar_bg | strip %}
+                  <img
+                    class="table-availability__avatar"
+                    src="https://ui-avatars.com/api/?name={{ cell_initials | url_encode }}&size=64&rounded=true&bold=true&background={{ avatar_bg }}&color=5a5a5a&length=2"
+                    alt="Booked by {{ cell_initials | escape }}"
+                    title="{{ cell_initials | escape }}"
+                    width="28"
+                    height="28"
+                    loading="lazy"
+                  >
+                {% else %}
+                  ✓
+                {% endif %}
               </td>
             {% endfor %}
           </tr>
