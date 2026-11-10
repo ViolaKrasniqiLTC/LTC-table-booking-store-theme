@@ -118,140 +118,121 @@ document.addEventListener("DOMContentLoaded", () => {
   
   
   
-    if (bookNowButton) {
-  
-      bookNowButton.addEventListener("click", async () => {
-  
-        const dates = [
-  
-          dateInput1?.value,
-  
-          dateInput2?.value,
-  
-          dateInput3?.value,
-  
-        ].filter(Boolean);
-  
-  
-  
-        if (dates.length === 0) {
-  
-          showPopup(
-  
-            "No dates selected",
-  
-            "Please select at least one booking date.",
-  
-          );
-  
-  
-  
-          return;
-  
-        }
-  
-  
-  
-        const variantId =
-  
-          document.querySelector('product-form form [name="id"]')?.value ||
-  
-          document.querySelector('[name="id"]')?.value ||
-  
-          window.bookingData?.variantId;
-  
-  
-  
-        if (!variantId) {
-  
-          showPopup(
-  
-            "Booking unavailable",
-  
-            "This table cannot be booked right now. Please refresh and try again.",
-  
-          );
-  
-  
-  
-          return;
-  
-        }
-  
-  
-  
-        const items = dates.map((date) => ({
-  
-          id: Number(variantId),
-  
-  
-  
-          quantity: 1,
-  
-  
-  
-          properties: {
-  
-            Table: tableName,
-  
-  
-  
-            "Booking Date": date,
-  
-          },
-  
-        }));
-  
-  
-  
-        try {
-  
-          const response = await fetch("/cart/add.js", {
-  
-            method: "POST",
-  
-  
-  
-            headers: {
-  
-              "Content-Type": "application/json",
-  
-            },
-  
-  
-  
-            body: JSON.stringify({
-  
-              items,
-  
-            }),
-  
-          });
-  
-  
-  
-          if (!response.ok) {
-  
-            throw new Error("Cart add failed");
-  
-          }
-  
-  
-  
-          window.location.href = "/checkout";
-  
-        } catch (error) {
-  
-          console.error(error);
-  
-  
-  
-          showPopup("Error", "Could not create booking.");
-  
-        }
-  
+    const UNAVAILABLE_DATES_PATTERN = /unavailableDates:\s*(\[[^\]]*\])/;
+
+    const getFreshUnavailableDates = async () => {
+      const response = await fetch(window.location.pathname, {
+        cache: "no-store",
+        credentials: "same-origin",
       });
-  
+
+      if (!response.ok) {
+        throw new Error(`Availability check failed: ${response.status}`);
+      }
+
+      const html = await response.text();
+      const match = html.match(UNAVAILABLE_DATES_PATTERN);
+
+      if (!match) {
+        throw new Error("Availability data not found on product page");
+      }
+
+      const parsed = JSON.parse(match[1]);
+
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+
+      return parsed.filter((date) => typeof date === "string");
+    };
+
+    const clearCart = async () => {
+      const response = await fetch("/cart/clear.js", { method: "POST" });
+
+      if (!response.ok) {
+        throw new Error(`Cart clear failed: ${response.status}`);
+      }
+    };
+
+    if (bookNowButton) {
+      bookNowButton.addEventListener("click", async () => {
+        const dates = [
+          dateInput1?.value,
+          dateInput2?.value,
+          dateInput3?.value,
+        ].filter(Boolean);
+
+        if (dates.length === 0) {
+          showPopup(
+            "No dates selected",
+            "Please select at least one booking date.",
+          );
+          return;
+        }
+
+        const variantId =
+          document.querySelector('product-form form [name="id"]')?.value ||
+          document.querySelector('[name="id"]')?.value ||
+          window.bookingData?.variantId;
+
+        if (!variantId) {
+          showPopup(
+            "Booking unavailable",
+            "This table cannot be booked right now. Please refresh and try again.",
+          );
+          return;
+        }
+
+        bookNowButton.disabled = true;
+
+        try {
+          const freshUnavailableDates = await getFreshUnavailableDates();
+          const takenDates = dates.filter((date) =>
+            freshUnavailableDates.includes(date),
+          );
+
+          if (takenDates.length > 0) {
+            showPopup(
+              "Date no longer available",
+              `${tableName} was just booked for ${takenDates.join(", ")}. Please refresh the page and choose another date.`,
+            );
+            bookNowButton.disabled = false;
+            return;
+          }
+
+          await clearCart();
+
+          const items = dates.map((date) => ({
+            id: Number(variantId),
+            quantity: 1,
+            properties: {
+              Table: tableName,
+              "Booking Date": date,
+            },
+          }));
+
+          const response = await fetch("/cart/add.js", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ items }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Cart add failed: ${response.status}`);
+          }
+
+          window.location.href = "/checkout";
+        } catch (error) {
+          console.error("[booking] Book Now failed", error);
+          showPopup(
+            "Error",
+            "Could not confirm this booking. Please refresh and try again.",
+          );
+          bookNowButton.disabled = false;
+        }
+      });
     }
   
   
